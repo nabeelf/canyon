@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Canyon CPQ App",
   description: "Configure, Price, Quote application built with Next.js",
+  icons: {
+    icon: '/canyon-logo.png',
+  },
 };
 
 export default function RootLayout({
