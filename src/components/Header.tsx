@@ -5,9 +5,10 @@ import { useState } from 'react';
 interface HeaderProps {
   isLoggedIn?: boolean;
   setIsLoggedIn?: (value: boolean) => void; // Made optional
+  onLogoClick?: () => void; // Function to handle logo click
 }
 
-export function Header({ isLoggedIn = false, setIsLoggedIn }: HeaderProps) {
+export function Header({ isLoggedIn = false, setIsLoggedIn, onLogoClick }: HeaderProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = () => {
@@ -38,16 +39,19 @@ export function Header({ isLoggedIn = false, setIsLoggedIn }: HeaderProps) {
   };
 
   return (
-    <header className={`w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ${isLoggedIn ? 'absolute top-0 left-0 right-0 z-50' : ''}`}>
+    <header className="w-full border-b border-border/50 bg-background/95 backdrop-blur fixed top-0 left-0 right-0 z-50">
       <div className="flex items-center justify-between p-4 px-8">
         <div className="flex items-center space-x-2">
           {/* Logo placeholder */}
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-sm">C</span>
           </div>
-          <a href="/" className="text-xl font-semibold hover:text-primary transition-colors">
+          <button 
+            onClick={onLogoClick}
+            className="text-xl font-semibold hover:text-primary transition-colors cursor-pointer"
+          >
             Canyon.ai
-          </a>
+          </button>
         </div>
         
         <nav className="hidden md:flex items-center space-x-8">
@@ -55,7 +59,7 @@ export function Header({ isLoggedIn = false, setIsLoggedIn }: HeaderProps) {
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="text-muted-foreground hover:text-foreground transition-fast px-4 py-2 rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed animate-slide-in-right"
+              className="text-muted-foreground hover:text-foreground transition-fast px-4 py-2 rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer animate-slide-in-right"
             >
               {isLoggingOut ? 'Logging out...' : 'Logout'}
             </button>

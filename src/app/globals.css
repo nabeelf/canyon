@@ -284,4 +284,21 @@ html {
   .animate-fade-in {
     @apply animate-in fade-in-0 duration-300;
   }
+  
+  /* Sidebar button utilities */
+  .sidebar-button {
+    @apply h-10 text-base transition-colors;
+  }
+  
+  .sidebar-button-hover {
+    @apply hover:bg-gray-800 hover:text-white;
+  }
+  
+  .sidebar-button-active {
+    @apply active:bg-gray-800 active:text-white;
+  }
+  
+  .sidebar-button-selected {
+    @apply bg-gray-800 text-white;
+  }
 }
