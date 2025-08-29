@@ -7,7 +7,7 @@ import { SidebarWrapper } from '@/components/Sidebar';
 import { HomeLoggedIn } from '@/components/HomeLoggedIn';
 import { Quotes } from '@/components/Quotes';
 import { CreateQuote } from '@/components/CreateQuote';
-import { Insights } from '@/components/Insights';
+
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { useState, useEffect } from 'react';
 import { Quote } from './types';
@@ -16,8 +16,7 @@ import { Quote } from './types';
 export enum ViewType {
   HOME = 'home',
   QUOTES = 'quotes',
-  CREATE_QUOTE = 'create-quote',
-  INSIGHTS = 'insights'
+  CREATE_QUOTE = 'create-quote'
 }
 
 export default function Home() {
@@ -124,9 +123,7 @@ export default function Home() {
                 <CreateQuote />
               )}
 
-              {currentView === ViewType.INSIGHTS && (
-                <Insights />
-              )}
+
             </main>
             </SidebarProvider>
           </div>

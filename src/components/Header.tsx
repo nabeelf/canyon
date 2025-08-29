@@ -53,7 +53,9 @@ export function Header({ isLoggedIn = false, setIsLoggedIn, onLogoClick }: Heade
             onClick={onLogoClick}
             className="text-xl font-semibold hover:text-primary transition-colors cursor-pointer"
           >
-            Canyon.ai
+            <span className="bg-gradient-to-r from-primary to-chart-1 bg-clip-text text-transparent">
+              Canyon.ai
+            </span>
           </button>
         </div>
         
