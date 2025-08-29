@@ -5,9 +5,9 @@ import { PageHeader } from "./PageHeader";
 export function QuoteConfigurer() {
   return (
     <PageHeader
-      title="Quote Configurer"
+      title="Configure Quotes"
       subtitle="Coming Soon"
-      description="Configure and customize existing quote templates using our robust quote configurer."
+      description="Configure and customize existing quotes using our robust quote configurer."
     />
   );
 }
