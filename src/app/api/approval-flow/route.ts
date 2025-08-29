@@ -4,7 +4,6 @@ import { updateApprovalFlow } from '@/app/utils/db_server_utils';
 export async function PUT(request: NextRequest) {
   try {
     const { quoteId, approvalSteps } = await request.json();
-
     if (!quoteId) {
       return NextResponse.json(
         { error: 'Quote ID is required' },
