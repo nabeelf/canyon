@@ -60,10 +60,10 @@ export function CreateQuote() {
     }
 
     // Create a cleaned response for display by removing the tags and their content
-    const cleanedContent = content
-      .replace(/<MARKDOWN>[\s\S]*?<\/MARKDOWN>/g, '')
-      .replace(/<QUOTE_METADATA>[\s\S]*?<\/QUOTE_METADATA>/g, '')
-      .trim();
+    // const cleanedContent = content
+    //   .replace(/<MARKDOWN>[\s\S]*?<\/MARKDOWN>/g, '')
+    //   .replace(/<QUOTE_METADATA>[\s\S]*?<\/QUOTE_METADATA>/g, '')
+    //   .trim();
   };
 
   const generatePDFBlob = async (): Promise<Blob | null> => {
@@ -320,7 +320,7 @@ export function CreateQuote() {
     try {
       // Generate UUID for filename
       const uuid = uuidv4();
-      const filename = `${uuid}.pdf`;
+                // const filename = `${uuid}.pdf`;
       
       // Generate PDF first
       const pdfBlob = await generatePDFBlob();
@@ -331,7 +331,7 @@ export function CreateQuote() {
 
 
       // Find company ID by name
-      const companyEntry = Array.from(COMPANY_LIST_BY_ID.values()).find((c: any) => c.name === quoteMetadata.company);
+              const companyEntry = Array.from(COMPANY_LIST_BY_ID.values()).find((c: any) => c.name === quoteMetadata.company); // eslint-disable-line @typescript-eslint/no-explicit-any
       if (!companyEntry) {
         throw new Error('Company not found');
       }
@@ -452,15 +452,15 @@ export function CreateQuote() {
       }
 
       // Create cleaned response for chat display first
-      const cleanedContent = result.data
-        .replace(/<MARKDOWN>[\s\S]*?<\/MARKDOWN>/g, '')
-        .replace(/<QUOTE_METADATA>[\s\S]*?<\/QUOTE_METADATA>/g, '')
-        .replace(/^\s+|\s+$/g, '') // Remove leading/trailing whitespace
-        .replace(/\n\s*\n/g, '\n') // Remove extra blank lines
-        .trim();
+      // const cleanedContent = result.data
+      //   .replace(/<MARKDOWN>[\s\S]*?<\/MARKDOWN>/g, '')
+      //   .replace(/<QUOTE_METADATA>[\s\S]*?<\/QUOTE_METADATA>/g, '')
+      //   .replace(/^\s+|\s+$/g, '') // Remove leading/trailing whitespace
+      //   .replace(/\n\s*\n/g, '\n') // Remove extra blank lines
+      //   .trim();
       
       console.log('Original response:', result.data);
-      console.log('Cleaned content for chat:', cleanedContent);
+              // console.log('Cleaned content for chat:', cleanedContent);
 
       // Parse the response for markdown and metadata
       parseResponse(result.data);
@@ -468,7 +468,7 @@ export function CreateQuote() {
       // Add assistant response to chat history with cleaned content
       const assistantMessage: ChatMessage = { 
         role: 'assistant', 
-        content: cleanedContent || "✅ Quote generated successfully! The detailed quote content can be seen and saved below. You can now preview the PDF or continue the conversation." 
+                  content: "✅ Quote generated successfully! The detailed quote content can be seen and saved below. You can now preview the PDF or continue the conversation." 
       };
       setChatHistory([...updatedHistory, assistantMessage]);
     } catch (err) {

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Download, Calendar, Building, Hash, FileText, Save, GripVertical, Trash2, Mail, User, DollarSign, Star, Users, Plus, XCircle, Percent } from "lucide-react";
+import { ArrowLeft, Download, Calendar, Building, Hash, FileText, Save, GripVertical, Trash2, Mail, User, DollarSign, Star, Users, Plus, XCircle } from "lucide-react";
 import { downloadQuoteDocument } from "@/app/utils/download_file";
 import { StatusPill } from "@/components/ui/status-pill";
 import { useState, useMemo } from "react";
@@ -150,7 +150,7 @@ export function QuoteDetails({ quote, onBack }: QuoteDetailsProps) {
   const [newStepApprover, setNewStepApprover] = useState<number | null>(null);
   
   // Track the current step position to maintain it across saves
-  const [currentStepPosition, setCurrentStepPosition] = useState<number>(() => {
+  const [currentStepPosition] = useState<number>(() => {
     if (quote.current_step) {
       return quote.approvalSteps.findIndex(s => s.id === quote.current_step!.id);
     }
@@ -272,8 +272,6 @@ export function QuoteDetails({ quote, onBack }: QuoteDetailsProps) {
         throw new Error(errorData.error || 'Failed to save approval flow');
       }
 
-      const result = await response.json();
-      
       // Update the original quote object with the new approval steps
       quote.approvalSteps = approvalSteps;
       

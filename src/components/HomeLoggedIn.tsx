@@ -1,6 +1,5 @@
 "use client";
 
-import { downloadQuoteDocument } from "@/app/utils/download_file";
 import { ApprovalTimeChart } from "./ApprovalTimeChart";
 import { QuotesByRoleChart } from "./QuotesByRoleChart";
 import { QuotesByStageChart } from "./QuotesByStageChart";
@@ -9,10 +8,9 @@ import { PageHeader } from "./PageHeader";
 
 interface HomeProps {
   userName: string;
-  userEmail: string;
 }
 
-export function HomeLoggedIn({ userName, userEmail }: HomeProps) {
+export function HomeLoggedIn({ userName }: HomeProps) {
   return (
     <div className="w-full max-w-7xl mx-auto px-6 pt-8 pb-16 animate-slide-in-top">
       {/* Welcome Section - Top Left */}

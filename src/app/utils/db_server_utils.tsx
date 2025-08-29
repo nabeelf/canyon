@@ -1,6 +1,6 @@
 import { createClient } from './supabase/server';
 import { cookies } from 'next/headers';
-import { ApprovalStep, ApprovalStatus, Plan, Quote, QuoteDbModel, QuoteType, StepDbModel } from '../types';
+import { ApprovalStep, Quote, QuoteDbModel, StepDbModel } from '../types';
 import { APPROVER_LIST_BY_ID, COMPANY_LIST_BY_ID } from '../consts';
 
 
@@ -131,7 +131,7 @@ export async function deleteQuote(id: string): Promise<void> {
 }
 
 // Update approval flow for a quote
-export async function updateApprovalFlow(quoteId: number, approvalSteps: ApprovalStep[]): Promise<any> {
+export async function updateApprovalFlow(quoteId: number, approvalSteps: ApprovalStep[]): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
   try {
     const cookieStore = cookies();
     const supabase = createClient(cookieStore);

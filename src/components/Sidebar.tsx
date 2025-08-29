@@ -1,10 +1,6 @@
 "use client";
 
 import { 
-  Sidebar as SidebarUI, 
-  SidebarProvider, 
-  SidebarHeader, 
-  SidebarGroup, 
   SidebarMenu, 
   SidebarMenuItem, 
   SidebarMenuButton, 

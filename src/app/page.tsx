@@ -118,7 +118,7 @@ export default function Home() {
           <SidebarWrapper currentView={currentView} setCurrentView={setCurrentView} />
             <main className="flex-1 min-h-screen">
               {currentView === ViewType.HOME && (
-                <HomeLoggedIn userName={userName} userEmail={userEmail} />
+                <HomeLoggedIn userName={userName} />
               )}
 
               {currentView === ViewType.QUOTES && (

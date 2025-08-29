@@ -32,7 +32,7 @@ const approvalData = [
   },
 ];
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
   if (active && payload && payload.length) {
     return (
       <div className="bg-background border rounded-lg p-3 shadow-lg">

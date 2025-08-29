@@ -1,7 +1,8 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { ApprovalStatus } from "@/app/types";
 
 // Sample data using actual ApprovalStatus enum values - you can replace this with real data from your API
@@ -32,7 +33,7 @@ const quotesByStageData = [
   },
 ];
 
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload }: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -50,10 +51,10 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-const CustomLegend = ({ payload }: any) => {
+const CustomLegend = ({ payload }: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
   return (
     <div className="flex flex-wrap justify-center gap-4 mt-4">
-      {payload.map((entry: any, index: number) => (
+      {payload.map((entry: any, index: number) => ( // eslint-disable-line @typescript-eslint/no-explicit-any
         <div key={`legend-${index}`} className="flex items-center gap-2">
           <div
             className="w-3 h-3 rounded-full"

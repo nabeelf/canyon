@@ -1,36 +1,365 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Canyon - Enterprise Quote Management System
 
-## Getting Started
+Canyon is a modern, AI-powered enterprise quote management application built with Next.js 15, TypeScript, and Supabase. It streamlines the quote creation, approval, and management process for enterprise sales teams.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Core Functionality
+- **AI-Powered Quote Builder**: GPT-5 powered quote generation with natural language input
+- **Quote Management**: Complete CRUD operations for enterprise quotes
+- **Approval Workflows**: Configurable multi-step approval processes with role-based access
+- **Document Management**: PDF generation and storage with Supabase
+- **Company Management**: Enterprise company and contact management
+- **Dashboard Analytics**: Real-time metrics and approval time tracking
+
+### Technical Features
+- **Modern UI**: Built with Shadcn UI components and Tailwind CSS
+- **Responsive Design**: Mobile-first responsive design
+- **Real-time Updates**: Live data synchronization
+- **Role-based Access**: Approval party and role management
+- **File Storage**: Secure PDF storage with Supabase Storage
+- **Authentication**: Google OAuth integration
+
+## 🏗️ Architecture
+
+### Frontend
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS + Shadcn UI
+- **Charts**: Recharts for data visualization
+- **State Management**: React hooks and local state
+
+### Backend
+- **API Routes**: Next.js API routes for backend logic
+- **Database**: Supabase (PostgreSQL) with Row Level Security
+- **Storage**: Supabase Storage for PDF documents
+- **Authentication**: Google OAuth with NextAuth.js
+- **AI Integration**: OpenAI GPT-5 API for quote generation
+
+### Database Schema
+```sql
+-- Core tables
+quotes: Quote information and metadata
+companies: Company details and contacts
+steps: Approval workflow steps
+users: User authentication and roles
+
+-- Key relationships
+quotes.company_id -> companies.id
+steps.quote_id -> quotes.id
+steps.assignee_id -> users.id
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📁 Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+├── app/
+│   ├── api/                    # API routes
+│   │   ├── auth/google/        # Google OAuth
+│   │   ├── approval-flow/      # Approval workflow management
+│   │   ├── create-completion/  # OpenAI AI completion
+│   │   ├── quote_document/     # PDF document management
+│   │   └── quotes/             # Quote CRUD operations
+│   ├── components/             # React components
+│   │   ├── ui/                 # Shadcn UI components
+│   │   ├── charts/             # Chart components (Recharts)
+│   │   ├── DataTable.tsx       # Quotes data table
+│   │   ├── CreateQuote.tsx     # AI quote builder
+│   │   ├── QuoteDetails.tsx    # Quote detail view
+│   │   └── Sidebar.tsx         # Navigation sidebar
+│   ├── utils/                  # Utility functions
+│   │   ├── db_server_utils.tsx # Database operations
+│   │   ├── supabase/           # Supabase client configs
+│   │   └── download_file.tsx   # File download utilities
+│   ├── types.ts                # TypeScript type definitions
+│   ├── consts.tsx              # Application constants
+│   └── page.tsx                # Main application page
+├── components/                  # Shared components
+└── public/                     # Static assets
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Installation & Setup
 
-## Learn More
+### Prerequisites
+- Node.js 18+ 
+- npm/yarn/pnpm
+- Supabase account
+- OpenAI API key
+- Google OAuth credentials
 
-To learn more about Next.js, take a look at the following resources:
+### 1. Clone and Install
+```bash
+git clone <your-repo-url>
+cd canyon
+npm install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Environment Configuration
+Create `.env.local` with the following variables:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-## Deploy on Vercel
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Application URLs (Production)
+NEXTAUTH_URL=https://yourdomain.com
+GOOGLE_REDIRECT_URI=https://yourdomain.com/api/auth/google/callback
+
+# Optional: Vercel auto-detection
+VERCEL_URL=https://yourdomain.com
+```
+
+### 3. Database Setup
+Run the following SQL in your Supabase SQL editor:
+
+```sql
+-- Create tables
+CREATE TABLE companies (
+  id BIGSERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE quotes (
+  id BIGSERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  company_id BIGINT REFERENCES companies(id),
+  tcv DECIMAL(15,2),
+  plan TEXT,
+  term_months INTEGER,
+  quote_type TEXT,
+  seats INTEGER,
+  discount_percentage DECIMAL(5,2),
+  filename TEXT,
+  step_number INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE steps (
+  id BIGSERIAL PRIMARY KEY,
+  quote_id BIGINT REFERENCES quotes(id) ON DELETE CASCADE,
+  step_number INTEGER NOT NULL,
+  status TEXT DEFAULT 'pending',
+  assignee_id BIGINT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create storage bucket
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('quote-documents', 'quote-documents', false);
+
+-- Enable RLS
+ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
+ALTER TABLE quotes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE steps ENABLE ROW LEVEL SECURITY;
+```
+
+### 4. Start Development Server
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+## 🔧 Key Components
+
+### AI Quote Builder (`CreateQuote.tsx`)
+- **Natural Language Input**: Users describe quotes in plain English
+- **GPT-5 Integration**: OpenAI API processes requests and generates structured data
+- **PDF Generation**: Automatic PDF creation with metadata extraction
+- **Chat Interface**: Interactive conversation with AI assistant
+- **Quote Storage**: Saves quotes to database with PDF upload
+
+### Approval Workflow (`QuoteDetails.tsx`)
+- **Multi-step Approval**: Configurable approval steps with role assignment
+- **Status Tracking**: Real-time status updates (pending, approved, rejected)
+- **Role-based Access**: Different approval parties (Sales, Legal, Finance)
+- **Workflow Management**: Add, edit, and reorder approval steps
+
+### Dashboard (`HomeLoggedIn.tsx`)
+- **Approval Time Charts**: Bar charts showing approval times by role
+- **Quote Distribution**: Pie charts for approval stages and role distribution
+- **Performance Metrics**: Key stats including pipeline values and close times
+- **Real-time Data**: Live updates from database
+
+### Data Management (`DataTable.tsx`)
+- **Sortable Columns**: Sort by any quote attribute
+- **Filtering**: Search and filter quotes
+- **Pagination**: Efficient data loading
+- **Actions**: View details, download PDFs, manage quotes
+
+## 🔌 API Endpoints
+
+### Authentication
+- `POST /api/auth/google` - Google OAuth flow
+
+### Quote Management
+- `GET /api/quotes` - Retrieve all quotes
+- `POST /api/quotes` - Create new quote
+- `PUT /api/quotes/[id]` - Update quote
+- `DELETE /api/quotes/[id]` - Delete quote
+
+### Document Management
+- `GET /api/quote_document` - Download PDF documents
+- `POST /api/quote_document` - Upload PDF documents
+
+### AI Integration
+- `POST /api/create-completion` - OpenAI GPT-5 completions
+
+### Approval Workflows
+- `PUT /api/approval-flow` - Update approval workflow
+
+## 🎨 UI Components
+
+### Shadcn UI Integration
+- **Cards**: Information display and organization
+- **Buttons**: Consistent button styling and variants
+- **Tables**: Data presentation with sorting and filtering
+- **Forms**: Input validation and user interaction
+- **Modals**: Overlay dialogs and confirmations
+
+### Custom Components
+- **PageHeader**: Reusable page headers with gradients
+- **StatusPill**: Approval status indicators
+- **Charts**: Data visualization with Recharts
+- **Sidebar**: Navigation with role-based access
+
+## 🔐 Security Features
+
+### Row Level Security (RLS)
+- **Database-level Security**: Supabase RLS policies
+- **User Isolation**: Users can only access their data
+- **Role-based Access**: Different permissions for different roles
+
+### Authentication
+- **Google OAuth**: Secure third-party authentication
+- **Session Management**: Secure cookie-based sessions
+- **Environment Variables**: Sensitive data in environment
+
+## 📊 Data Flow
+
+### Quote Creation Flow
+1. **User Input**: Natural language description in AI builder
+2. **AI Processing**: GPT-5 generates structured quote data
+3. **PDF Generation**: HTML to PDF conversion with metadata
+4. **Storage Upload**: PDF uploaded to Supabase Storage
+5. **Database Insert**: Quote record created in database
+6. **Confirmation**: Success message with next steps
+
+### Approval Workflow Flow
+1. **Quote Creation**: Quote created with initial step number
+2. **Workflow Setup**: Admin configures approval steps
+3. **Step Assignment**: Roles assigned to each step
+4. **Approval Process**: Sequential approval through steps
+5. **Status Updates**: Real-time status tracking
+6. **Completion**: Quote approved or rejected
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+```bash
+npm run build
+vercel --prod
+```
+
+### Environment Variables for Production
+- Set all required environment variables in Vercel dashboard
+- Ensure `NEXTAUTH_URL` points to your production domain
+- Configure Google OAuth redirect URIs for production
+
+### Custom Domain
+1. Add custom domain in Vercel
+2. Set `NEXTAUTH_URL` to your custom domain
+3. Update Google OAuth redirect URIs
+4. Configure DNS records
+
+## 🧪 Development
+
+### Available Scripts
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run type-check   # Run TypeScript type checking
+```
+
+### Code Style
+- **TypeScript**: Strict type checking enabled
+- **ESLint**: Code quality and consistency
+- **Prettier**: Code formatting
+- **Component Structure**: Functional components with hooks
+
+### Testing
+- **Unit Tests**: Component testing with Jest
+- **Integration Tests**: API endpoint testing
+- **E2E Tests**: User flow testing with Playwright
+
+## 🔍 Troubleshooting
+
+### Common Issues
+1. **Supabase Connection**: Check environment variables and network access
+2. **Google OAuth**: Verify redirect URIs and client credentials
+3. **PDF Generation**: Ensure all dependencies are installed
+4. **Storage Access**: Check bucket permissions and RLS policies
+
+### Debug Mode
+Enable debug logging by setting:
+```bash
+DEBUG=* npm run dev
+```
+
+## 📈 Performance
+
+### Optimization Features
+- **Image Optimization**: Next.js automatic image optimization
+- **Code Splitting**: Automatic route-based code splitting
+- **Static Generation**: Static site generation where possible
+- **API Caching**: Intelligent API response caching
+
+### Monitoring
+- **Performance Metrics**: Core Web Vitals tracking
+- **Error Tracking**: Comprehensive error logging
+- **User Analytics**: Usage pattern analysis
+
+## 🤝 Contributing
+
+### Development Workflow
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+### Code Standards
+- Follow TypeScript best practices
+- Use consistent naming conventions
+- Add JSDoc comments for complex functions
+- Ensure all tests pass
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+For support and questions:
+- Create an issue in the GitHub repository
+- Check the documentation
+- Review the troubleshooting guide
+
+---
+
+**Built with ❤️ using Next.js, TypeScript, and Supabase**

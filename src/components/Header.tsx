@@ -43,7 +43,8 @@ export function Header({ isLoggedIn = false, setIsLoggedIn, onLogoClick }: Heade
       <div className="flex items-center justify-between p-4 px-8">
         <div className="flex items-center space-x-2">
           {/* Canyon Logo */}
-          <img 
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img 
             src="/canyon-logo.png" 
             alt="Canyon Logo" 
             className="w-8 h-8 object-contain cursor-pointer mb-2"

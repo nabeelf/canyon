@@ -2,7 +2,7 @@
 
 import { DataTable } from "./DataTable";
 import { QuoteDetails } from "./QuoteDetails";
-import { ApprovalParty, ApprovalStatus, Quote } from "@/app/types";
+import { Quote } from "@/app/types";
 import { useState } from "react";
 import { PageHeader } from "./PageHeader";
 
