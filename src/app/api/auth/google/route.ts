@@ -15,12 +15,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
 
-  console.log('OAuth request:', { 
-    hasCode: !!code, 
-    clientId: GOOGLE_CLIENT_ID ? 'set' : 'missing',
-    clientSecret: GOOGLE_CLIENT_SECRET ? 'set' : 'missing',
-    redirectUri: REDIRECT_URI 
-  });
+
 
   if (!code) {
     // Initial OAuth request - redirect to Google
@@ -32,7 +27,7 @@ export async function GET(request: NextRequest) {
       `&access_type=offline` +
       `&prompt=consent`;
 
-    console.log('Redirecting to Google OAuth:', googleAuthUrl);
+
     return NextResponse.redirect(googleAuthUrl);
   }
 
@@ -54,7 +49,7 @@ export async function GET(request: NextRequest) {
 
     const tokens = await tokenResponse.json();
     
-    console.log('Token response:', tokens);
+
 
     if (tokens.error) {
       console.error('Token error details:', tokens);

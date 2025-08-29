@@ -43,7 +43,6 @@ export function CreateQuote() {
     if (markdownMatch) {
       const markdown = markdownMatch[1].trim();
       setMarkdownContent(markdown);
-      console.log('Extracted markdown content:', markdown);
     }
 
     // Extract quote metadata between <QUOTE_METADATA> tags
@@ -53,17 +52,12 @@ export function CreateQuote() {
         const metadataJson = metadataMatch[1].trim();
         const metadata = JSON.parse(metadataJson);
         setQuoteMetadata(metadata);
-        console.log('Extracted quote metadata:', metadata);
       } catch (err) {
         console.error('Failed to parse quote metadata:', err);
       }
     }
 
     // Create a cleaned response for display by removing the tags and their content
-    // const cleanedContent = content
-    //   .replace(/<MARKDOWN>[\s\S]*?<\/MARKDOWN>/g, '')
-    //   .replace(/<QUOTE_METADATA>[\s\S]*?<\/QUOTE_METADATA>/g, '')
-    //   .trim();
   };
 
   const generatePDFBlob = async (): Promise<Blob | null> => {
@@ -320,7 +314,6 @@ export function CreateQuote() {
     try {
       // Generate UUID for filename
       const uuid = uuidv4();
-                // const filename = `${uuid}.pdf`;
       
       // Generate PDF first
       const pdfBlob = await generatePDFBlob();
@@ -450,17 +443,6 @@ export function CreateQuote() {
       if (!response.ok) {
         throw new Error(result.error || 'Failed to get completion');
       }
-
-      // Create cleaned response for chat display first
-      // const cleanedContent = result.data
-      //   .replace(/<MARKDOWN>[\s\S]*?<\/MARKDOWN>/g, '')
-      //   .replace(/<QUOTE_METADATA>[\s\S]*?<\/QUOTE_METADATA>/g, '')
-      //   .replace(/^\s+|\s+$/g, '') // Remove leading/trailing whitespace
-      //   .replace(/\n\s*\n/g, '\n') // Remove extra blank lines
-      //   .trim();
-      
-      console.log('Original response:', result.data);
-              // console.log('Cleaned content for chat:', cleanedContent);
 
       // Parse the response for markdown and metadata
       parseResponse(result.data);
