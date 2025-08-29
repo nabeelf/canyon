@@ -162,7 +162,7 @@ export function DataTable({ quotes, onViewDetails }: DataTableProps) {
       },
       cell: ({ row }) => (
         <div className="ml-5 font-medium">
-          ${row.original.tcv.toLocaleString()}
+          ${row.original.tcv ? row.original.tcv.toLocaleString() : '0'}
         </div>
       ),
     },

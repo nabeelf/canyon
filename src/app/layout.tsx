@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Canyon CPQ App",
-  description: "Configure, Price, Quote application built with Next.js",
+  title: "Canyon.ai",
+  description: "Configure, Price, Quote with Canyon.ai",
   icons: {
     icon: '/canyon-logo.png',
   },

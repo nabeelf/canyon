@@ -1,6 +1,6 @@
 import { createClient } from './supabase/server';
 import { cookies } from 'next/headers';
-import { ApprovalStep, Quote, QuoteDbModel, StepDbModel } from '../types';
+import { ApprovalStep, ApprovalStatus, Plan, Quote, QuoteDbModel, QuoteType, StepDbModel } from '../types';
 import { APPROVER_LIST_BY_ID, COMPANY_LIST_BY_ID } from '../consts';
 
 
@@ -32,6 +32,7 @@ const mapDbQuoteAndStepsToQuote = (quote: QuoteDbModel & {steps: StepDbModel[]})
     term_months: quote.term_months,
     quote_type: quote.quote_type,
     seats: quote.seats,
+    discount_percentage: quote.discount_percentage,
   };
 };
 
@@ -68,33 +69,41 @@ export async function readQuotes(): Promise<Quote[]> {
   }
 }
 
-// Read a single quote by ID
-export async function readQuoteById(id: string): Promise<Quote | null> {
+// Create a new quote in the database
+export async function createQuote(quoteData: Omit<QuoteDbModel, 'id' | 'created_at' | 'updated_at'>): Promise<QuoteDbModel> {
   try {
     const cookieStore = cookies();
     const supabase = createClient(cookieStore);
-    const { data, error } = await supabase
+
+    // Insert the quote
+    const { data: quote, error: quoteError } = await supabase
       .from('quotes')
-      .select(`
-          *,
-          steps:steps(*)
-      `)
-      .eq('id', id)
+      .insert([{
+        id: Date.now(),
+        name: quoteData.name,
+        company_id: quoteData.company_id,
+        tcv: quoteData.tcv,
+        plan: quoteData.plan,
+        term_months: quoteData.term_months,
+        quote_type: quoteData.quote_type,
+        seats: quoteData.seats,
+        discount_percentage: quoteData.discount_percentage,
+        filename: quoteData.filename,
+        step_number: quoteData.step_number,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }])
+      .select()
       .single();
 
-    if (error) {
-      console.error('Error reading quote by ID:', error);
-      throw error;
+    if (quoteError) {
+      console.error('Error creating quote:', quoteError);
+      throw quoteError;
     }
 
-    const quoteAndStepsFromDb: (QuoteDbModel & {steps: StepDbModel[]}) = data ?? null;
-    if (quoteAndStepsFromDb) {
-      return mapDbQuoteAndStepsToQuote(quoteAndStepsFromDb);
-    }
-
-    return null;
+    return quote;
   } catch (error) {
-    console.error('Failed to read quote by ID:', error);
+    console.error('Failed to create quote:', error);
     throw error;
   }
 }

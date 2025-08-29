@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readQuotes } from '@/app/utils/db_server_utils';
-import { deleteQuote } from '@/app/utils/db_server_utils';
+import { createQuote, readQuotes, deleteQuote } from '../../utils/db_server_utils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -57,5 +56,20 @@ export async function DELETE(request: NextRequest) {
       },
       { status: 500 }
     );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    
+    // Create quote in database
+    await createQuote(body);
+
+    return NextResponse.json({ success: true });
+
+  } catch (error) {
+    console.error('Error creating quote:', error);
+    return NextResponse.json({ error: 'Failed to create quote' }, { status: 500 });
   }
 }

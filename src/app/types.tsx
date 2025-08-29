@@ -63,6 +63,7 @@ export type Quote = {
     term_months: number;
     quote_type: QuoteType;
     seats: number;
+    discount_percentage: number;
 }
 
 // DB MODELS
@@ -79,6 +80,7 @@ export type QuoteDbModel = {
     term_months: number;
     quote_type: QuoteType;
     seats: number;
+    discount_percentage: number;
 }
 
 export type StepDbModel = {

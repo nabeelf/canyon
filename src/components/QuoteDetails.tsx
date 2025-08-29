@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Download, Calendar, Building, Hash, FileText, Save, GripVertical, Trash2, Mail, User, DollarSign, Star, Users, Plus, XCircle } from "lucide-react";
+import { ArrowLeft, Download, Calendar, Building, Hash, FileText, Save, GripVertical, Trash2, Mail, User, DollarSign, Star, Users, Plus, XCircle, Percent } from "lucide-react";
 import { downloadQuoteDocument } from "@/app/utils/download_file";
 import { StatusPill } from "@/components/ui/status-pill";
 import { useState, useMemo } from "react";
@@ -606,12 +606,14 @@ export function QuoteDetails({ quote, onBack }: QuoteDetailsProps) {
               <p className="text-sm font-medium">{quote.quote_type}</p>
             </div>
             
+
+            
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <Calendar className="w-4 h-4" />
-                Last Updated
+                <Hash className="w-4 h-4" />
+                Discount Percentage
               </div>
-              <p className="text-sm">{formatDate(quote.updated_at)}</p>
+              <p className="text-sm font-medium">15%</p>
             </div>
           </div>
         </CardContent>

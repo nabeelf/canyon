@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/app/utils/supabase/server';
 import { cookies } from 'next/headers';
+import { createQuote } from '../../utils/db_server_utils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -77,5 +78,53 @@ export async function GET(request: NextRequest) {
       },
       { status: 500 }
     );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { filename, pdfData } = body;
+    
+    if (!filename || !pdfData) {
+      return NextResponse.json(
+        { error: 'Filename and PDF data are required' },
+        { status: 400 }
+      );
+    }
+
+    const cookieStore = cookies();
+    const supabase = createClient(cookieStore);
+    
+    // Convert base64 PDF data to buffer
+    const pdfBuffer = Buffer.from(pdfData, 'base64');
+    
+    // Upload document to Supabase storage bucket using server-side client
+    // Add .pdf extension to the filename for storage
+    const storageFilename = `${filename}.pdf`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('quote-documents')
+      .upload(storageFilename, pdfBuffer, {
+        contentType: 'application/pdf',
+        cacheControl: '3600'
+      });
+
+    if (uploadError) {
+      console.error('Storage upload error:', uploadError);
+      return NextResponse.json(
+        { error: 'Failed to upload document to storage', details: uploadError.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Document uploaded and quote created successfully',
+      uploadData 
+    });
+
+  } catch (error) {
+    console.error('Error creating quote document:', error);
+    return NextResponse.json({ error: 'Failed to create quote document' }, { status: 500 });
   }
 }
