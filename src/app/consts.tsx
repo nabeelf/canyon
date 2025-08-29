@@ -1,6 +1,6 @@
 import { ApprovalParty, Approver, Company } from "./types";
 
-// Ideally this would be a db table, but for now we will hardcode it since this doesn't change for our demo use case.
+// Ideally these would be a db tables, but for now we will hardcode these since they don't change for our demo use case.
 export const APPROVER_LIST_BY_ID: Map<number, Approver> = new Map([
     [1, {
         id: 1,

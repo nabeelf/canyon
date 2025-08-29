@@ -7,6 +7,9 @@ import { SidebarWrapper } from '@/components/Sidebar';
 import { HomeLoggedIn } from '@/components/HomeLoggedIn';
 import { Quotes } from '@/components/Quotes';
 import { CreateQuote } from '@/components/CreateQuote';
+import { QuoteConfigurer } from '@/components/QuoteConfigurer';
+import { Companies } from '@/components/Companies';
+import { PricingPlans } from '@/components/PricingPlans';
 
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { useState, useEffect } from 'react';
@@ -16,7 +19,10 @@ import { Quote } from './types';
 export enum ViewType {
   HOME = 'home',
   QUOTES = 'quotes',
-  CREATE_QUOTE = 'create-quote'
+  CREATE_QUOTE = 'create-quote',
+  QUOTE_CONFIGURER = 'quote-configurer',
+  COMPANIES = 'companies',
+  PRICING_PLANS = 'pricing-plans'
 }
 
 export default function Home() {
@@ -121,6 +127,18 @@ export default function Home() {
 
               {currentView === ViewType.CREATE_QUOTE && (
                 <CreateQuote />
+              )}
+
+              {currentView === ViewType.QUOTE_CONFIGURER && (
+                <QuoteConfigurer />
+              )}
+
+              {currentView === ViewType.COMPANIES && (
+                <Companies />
+              )}
+
+              {currentView === ViewType.PRICING_PLANS && (
+                <PricingPlans />
               )}
 
 
