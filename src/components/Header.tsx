@@ -42,10 +42,13 @@ export function Header({ isLoggedIn = false, setIsLoggedIn, onLogoClick }: Heade
     <header className="w-full border-b border-border/50 bg-background/95 backdrop-blur fixed top-0 left-0 right-0 z-50">
       <div className="flex items-center justify-between p-4 px-8">
         <div className="flex items-center space-x-2">
-          {/* Logo placeholder */}
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">C</span>
-          </div>
+          {/* Canyon Logo */}
+          <img 
+            src="/canyon-logo.png" 
+            alt="Canyon Logo" 
+            className="w-8 h-8 object-contain cursor-pointer mb-2"
+            onClick={onLogoClick}
+          />
           <button 
             onClick={onLogoClick}
             className="text-xl font-semibold hover:text-primary transition-colors cursor-pointer"

@@ -10,6 +10,8 @@ import { CreateQuote } from '@/components/CreateQuote';
 import { Insights } from '@/components/Insights';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { useState, useEffect } from 'react';
+import { Quote } from './types';
+
 
 export enum ViewType {
   HOME = 'home',
@@ -32,7 +34,8 @@ export default function Home() {
         : ViewType.HOME;
     }
     return ViewType.HOME;
-  });
+  }); 
+  const [quotes, setQuotes] = useState<Quote[]>([]);  
 
   // Check cookies on component mount
   useEffect(() => {
@@ -65,6 +68,26 @@ export default function Home() {
     }
   }, [currentView]);
 
+  // Fetch quotes data
+  useEffect(() => {
+    const fetchQuotes = async () => {
+      try {
+        const response = await fetch('/api/quotes');
+        const result = await response.json();
+        
+        if (result.success) {
+          setQuotes(result.data);
+        } else {
+          console.error('API error:', result.error, result.message);
+        }
+      } catch (error) {
+        console.error('Error fetching quotes:', error);
+      }
+    };
+
+    fetchQuotes();
+  }, []);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -88,13 +111,13 @@ export default function Home() {
        <div className="flex pt-20 animate-slide-in-bottom">
         <SidebarProvider>
           <SidebarWrapper currentView={currentView} setCurrentView={setCurrentView} />
-            <main className="flex-1 flex items-center justify-center min-h-screen">
+            <main className="flex-1 min-h-screen">
               {currentView === ViewType.HOME && (
                 <HomeLoggedIn userName={userName} userEmail={userEmail} />
               )}
 
               {currentView === ViewType.QUOTES && (
-                <Quotes />
+                <Quotes quotes={quotes} />
               )}
 
               {currentView === ViewType.CREATE_QUOTE && (
