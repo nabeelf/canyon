@@ -48,10 +48,10 @@ export function Header({ isLoggedIn = false, setIsLoggedIn, onLogoClick }: Heade
             src="/canyon-logo.png" 
             alt="Canyon Logo" 
             className="w-8 h-8 object-contain cursor-pointer mb-2"
-            onClick={() => window.location.href = '/'}
+            onClick={isLoggedIn && onLogoClick ? onLogoClick : () => window.location.href = '/'}
           />
           <button 
-            onClick={() => window.location.href = '/'}
+            onClick={isLoggedIn && onLogoClick ? onLogoClick : () => window.location.href = '/'}
             className="text-xl font-semibold hover:text-primary transition-colors cursor-pointer"
           >
             <span className="bg-gradient-to-r from-primary to-chart-1 bg-clip-text text-transparent">
