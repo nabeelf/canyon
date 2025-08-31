@@ -375,13 +375,25 @@ export async function POST(request: NextRequest) {
 
     if (isVercel) {
       // Use puppeteer-core with @sparticuz/chromium on Vercel
-      const chromium = (await import("@sparticuz/chromium")).default;
-      puppeteer = await import("puppeteer-core");
-      launchOptions = {
-        ...launchOptions,
-        args: chromium.args,
-        executablePath: await chromium.executablePath(),
-      };
+      try {
+        const chromium = (await import("@sparticuz/chromium")).default;
+        puppeteer = await import("puppeteer-core");
+        
+        // Get the executable path
+        const executablePath = await chromium.executablePath();
+        
+        launchOptions = {
+          ...launchOptions,
+          args: [
+            ...chromium.args,
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+          ],
+          executablePath,
+        };
+      } catch (error) {
+        console.error('Failed to load @sparticuz/chromium:', error);
+      }
     } else {
       // Use regular puppeteer for local development with macOS fixes
       puppeteer = await import("puppeteer");
