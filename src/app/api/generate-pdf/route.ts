@@ -374,25 +374,39 @@ export async function POST(request: NextRequest) {
     };
 
     if (isVercel) {
-      // Use puppeteer-core with @sparticuz/chromium on Vercel
+      // Use puppeteer with built-in browser download on Vercel
       try {
-        const chromium = (await import("@sparticuz/chromium")).default;
-        puppeteer = await import("puppeteer-core");
+        puppeteer = await import("puppeteer");
         
-        // Get the executable path
-        const executablePath = await chromium.executablePath();
+        // Download and install browser if needed
+        const install = require('puppeteer/internal/node/install.js').downloadBrowser;
+        await install();
         
         launchOptions = {
           ...launchOptions,
           args: [
-            ...chromium.args,
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
+            "--use-gl=angle",
+            "--use-angle=swiftshader", 
+            "--single-process",
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--no-first-run",
+            "--no-zygote",
+            "--disable-extensions",
+            "--disable-background-timer-throttling",
+            "--disable-backgrounding-occluded-windows",
+            "--disable-renderer-backgrounding",
+            "--disable-features=TranslateUI",
+            "--disable-ipc-flooding-protection",
+            "--disable-web-security",
+            "--disable-features=VizDisplayCompositor",
           ],
-          executablePath,
         };
       } catch (error) {
-        console.error('Failed to load @sparticuz/chromium:', error);
+        console.error('Failed to setup puppeteer for Vercel:', error);
+        throw new Error('Failed to initialize Puppeteer for Vercel environment');
       }
     } else {
       // Use regular puppeteer for local development with macOS fixes
@@ -433,14 +447,36 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Launch browser
-    const browser = await puppeteer.launch(launchOptions);
+    // Launch browser with retry mechanism
+    let browser;
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    while (retryCount < maxRetries) {
+      try {
+        browser = await puppeteer.launch(launchOptions);
+        break;
+      } catch (error) {
+        retryCount++;
+        console.error(`Browser launch attempt ${retryCount} failed:`, error);
+        
+        if (retryCount >= maxRetries) {
+          throw new Error(`Failed to launch browser after ${maxRetries} attempts: ${error}`);
+        }
+        
+        // Wait a bit before retrying
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    }
     const page = await browser.newPage();
 
-    // Set content and wait for it to load
-    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+    // Set content and wait for it to load with timeout
+    await page.setContent(htmlContent, { 
+      waitUntil: "networkidle0",
+      timeout: 30000 
+    });
 
-    // Generate PDF
+    // Generate PDF with timeout
     const pdf = await page.pdf({
       format: 'A4',
       printBackground: true,
@@ -449,7 +485,8 @@ export async function POST(request: NextRequest) {
         right: '20mm',
         bottom: '20mm',
         left: '20mm'
-      }
+      },
+      timeout: 30000
     });
 
     // Close browser
