@@ -13,7 +13,7 @@ import { downloadQuoteDocument } from "@/app/utils/download_file";
 import { useRouter } from "next/navigation";
 
 
-export function Quotes({ quotes }: { quotes: Quote[] }) {
+export function Quotes({ quotes, onQuotesChange }: { quotes: Quote[]; onQuotesChange?: () => void }) {
   const router = useRouter();
 
   const handleViewDetails = (quote: Quote) => {
@@ -195,8 +195,10 @@ export function Quotes({ quotes }: { quotes: Quote[] }) {
                 throw new Error(`Failed to delete quote ${id}`);
               }
             }
-            // Refresh the page after deletion
-            window.location.reload();
+            // Refresh the quotes data instead of reloading the page
+            if (onQuotesChange) {
+              onQuotesChange();
+            }
           }}
           getId={(quote) => quote.id.toString()}
           deleteDialogTitle="Delete Selected Quotes"

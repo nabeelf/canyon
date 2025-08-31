@@ -6,22 +6,12 @@ import { COMPANY_LIST_BY_ID } from "../app/consts";
 import { v4 as uuidv4 } from 'uuid';
 import { ChatInterface } from "@/components/ui/chat-interface";
 import { QuotePreview } from "@/components/ui/quote-preview";
-import { generatePDFBlob, generatePDF } from "@/app/utils/md-to-pdf-generator";
+import { generatePDF } from "@/app/utils/pdf-generator";
+import { QuoteMetadata } from "@/app/types";
 
 type ChatMessage = {
   role: 'user' | 'assistant';
   content: string;
-}
-
-type QuoteMetadata = {
-  name: string;
-  company: string;
-  total_contract_value: number;
-  plan: string;
-  term_months: number;
-  quote_type: string;
-  seats: number;
-  discount_percentage?: number;
 }
 
 export function CreateQuote() {
@@ -35,16 +25,11 @@ export function CreateQuote() {
   const [saveMessage, setSaveMessage] = useState<string>("");
 
   const parseResponse = (content: string) => {
-    console.log('Parsing response:', content);
-    
     // Extract markdown content between <MARKDOWN> tags
     const markdownMatch = content.match(/<MARKDOWN>([\s\S]*?)<\/MARKDOWN>/);
     if (markdownMatch) {
       const markdown = markdownMatch[1].trim();
-      console.log('Found markdown:', markdown.substring(0, 100) + '...');
       setMarkdownContent(markdown);
-    } else {
-      console.log('No markdown tags found');
     }
 
     // Extract quote metadata between <QUOTE_METADATA> tags
@@ -52,20 +37,45 @@ export function CreateQuote() {
     if (metadataMatch) {
       try {
         const metadataJson = metadataMatch[1].trim();
-        console.log('Found metadata JSON:', metadataJson);
         const metadata = JSON.parse(metadataJson);
-        console.log('Parsed metadata:', metadata);
+        
+        // Find company by name
+        const companyEntry = Array.from(COMPANY_LIST_BY_ID.values()).find((c) => c.name === metadata.company);
+        if (!companyEntry) {
+          throw new Error('Company not found');
+        }
+        
+        // Replace company name with full company object
+        metadata.company = companyEntry;
         setQuoteMetadata(metadata);
       } catch (err) {
         console.error('Failed to parse quote metadata:', err);
       }
-    } else {
-      console.log('No metadata tags found');
     }
   };
 
   const createPDFBlob = async (): Promise<Blob | null> => {
-    return await generatePDFBlob(markdownContent, quoteMetadata);
+    try {
+      const response = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          markdownContent,
+          quoteMetadata,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF');
+      }
+
+      return await response.blob();
+    } catch (error) {
+      console.error('Error generating PDF blob:', error);
+      return null;
+    }
   };
 
   const handleGeneratePDF = async () => {
@@ -98,12 +108,6 @@ export function CreateQuote() {
         throw new Error('Failed to generate PDF');
       }
 
-      // Find company ID by name
-      const companyEntry = Array.from(COMPANY_LIST_BY_ID.values()).find((c) => c.name === quoteMetadata.company);
-      if (!companyEntry) {
-        throw new Error('Company not found');
-      }
-
       // Convert PDF blob to base64 for backend upload
       const pdfBase64 = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -125,8 +129,8 @@ export function CreateQuote() {
         },
         body: JSON.stringify({
           name: quoteMetadata.name,
-          company_id: companyEntry.id,
-          tcv: quoteMetadata.total_contract_value,
+          company_id: quoteMetadata.company.id,
+          tcv: quoteMetadata.tcv,
           plan: quoteMetadata.plan,
           term_months: quoteMetadata.term_months,
           quote_type: quoteMetadata.quote_type,
@@ -152,8 +156,8 @@ export function CreateQuote() {
         },
         body: JSON.stringify({
           name: quoteMetadata.name,
-          company_id: companyEntry.id,
-          tcv: quoteMetadata.total_contract_value,
+          company_id: quoteMetadata.company.id,
+          tcv: quoteMetadata.tcv,
           plan: quoteMetadata.plan,
           term_months: quoteMetadata.term_months,
           quote_type: quoteMetadata.quote_type,
@@ -211,9 +215,6 @@ export function CreateQuote() {
       });
 
       const result = await response.json();
-      console.log('API response:', result);
-      console.log('result.data type:', typeof result.data);
-      console.log('result.data content:', result.data);
 
       if (!response.ok) {
         throw new Error(result.error || 'Failed to get completion');
@@ -233,7 +234,6 @@ export function CreateQuote() {
         role: 'assistant', 
         content: cleanResponse || "Quote generated successfully! Check the details below."
       };
-      console.log('Setting assistant message to:', assistantMessage.content);
       setChatHistory([...updatedHistory, assistantMessage]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');

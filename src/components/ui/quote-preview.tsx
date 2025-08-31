@@ -1,17 +1,7 @@
 import { useRef } from "react";
 import ReactMarkdown from 'react-markdown';
 import { Button } from "@/components/ui/button";
-
-interface QuoteMetadata {
-  name: string;
-  company: string;
-  total_contract_value: number;
-  plan: string;
-  term_months: number;
-  quote_type: string;
-  seats: number;
-  discount_percentage?: number;
-}
+import { QuoteMetadata } from "@/app/types";
 
 interface QuotePreviewProps {
   quoteMetadata: QuoteMetadata;
@@ -92,7 +82,7 @@ export function QuotePreview({
           <div className="quote-preview-card-content">
             <div className="quote-preview-item">
               <span className="quote-preview-label">Company:</span>
-              <p className="quote-preview-value">{quoteMetadata.company}</p>
+              <p className="quote-preview-value">{quoteMetadata.company.name}</p>
             </div>
             <div className="quote-preview-item">
               <span className="quote-preview-label">Quote Type:</span>
@@ -124,7 +114,7 @@ export function QuotePreview({
           <div className="quote-preview-card-content">
             <div className="quote-preview-item">
               <span className="quote-preview-label">Total Contract Value:</span>
-              <p className="quote-preview-value quote-preview-value-highlight">${quoteMetadata.total_contract_value?.toLocaleString()}</p>
+              <p className="quote-preview-value quote-preview-value-highlight">${quoteMetadata.tcv?.toLocaleString()}</p>
             </div>
             <div className="quote-preview-item">
               <span className="quote-preview-label">Discount:</span>

@@ -9,28 +9,28 @@ export default function QuotesPage() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
 
   // Fetch quotes data
-  useEffect(() => {
-    const fetchQuotes = async () => {
-      try {
-        const response = await fetch('/api/quotes');
-        const result = await response.json();
-        
-        if (result.success) {
-          setQuotes(result.data);
-        } else {
-          console.error('API error:', result.error, result.message);
-        }
-      } catch (error) {
-        console.error('Error fetching quotes:', error);
+  const fetchQuotes = async () => {
+    try {
+      const response = await fetch('/api/quotes');
+      const result = await response.json();
+      
+      if (result.success) {
+        setQuotes(result.data);
+      } else {
+        console.error('API error:', result.error, result.message);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching quotes:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchQuotes();
   }, []);
 
   return (
     <LoggedInLayout>
-      <Quotes quotes={quotes} />
+      <Quotes quotes={quotes} onQuotesChange={fetchQuotes} />
     </LoggedInLayout>
   );
 }

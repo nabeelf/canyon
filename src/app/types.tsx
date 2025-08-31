@@ -62,22 +62,25 @@ export type ApprovalStep = {
     info_requested: string | null;
 }
 
-export type Quote = {
-    id: number;
-    created_at: string;
-    updated_at: string;
-    filename: string;
+export type QuoteMetadata = {
     name: string;
     company: Company;
-    current_step: ApprovalStep | null;
-    approvalSteps: ApprovalStep[];
-    step_number: number;
     tcv: number;
     plan: Plan;
     term_months: number;
     quote_type: QuoteType;
     seats: number;
-    discount_percentage: number;
+    discount_percentage?: number;
+  }
+
+export type Quote = QuoteMetadata & {
+    id: number;
+    created_at: string;
+    updated_at: string;
+    filename: string;
+    current_step: ApprovalStep | null;
+    approvalSteps: ApprovalStep[];
+    step_number: number;
 }
 
 // DB MODELS
