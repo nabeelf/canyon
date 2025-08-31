@@ -6,8 +6,8 @@ export function QuoteConfigurer() {
   return (
     <PageHeader
       title="Configure Quotes"
-      subtitle="Coming Soon"
-      description="Configure and customize existing quotes using our robust quote configurer."
+      subtitle="Configure and customize existing quotes using our robust quote configurer."
+      description="Coming Soon"
     />
   );
 }

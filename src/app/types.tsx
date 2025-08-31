@@ -24,6 +24,20 @@ export enum QuoteType {
     EXPANSION = "Expansion",
 }
 
+export enum ViewType {
+  HOME = 'home',
+  QUOTES = 'quotes',
+  CREATE_QUOTE = 'create-quote',
+  QUOTE_CONFIGURER = 'quote-configurer',
+  COMPANIES = 'companies',
+  PRICING_PLANS = 'pricing-plans'
+}
+
+export type AuthStatus = {
+    isLoggedIn: boolean;
+    userName: string;
+}
+
 export type Company = {
     id: number;
     name: string;

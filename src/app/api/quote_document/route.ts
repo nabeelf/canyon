@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/app/utils/supabase/server';
 import { cookies } from 'next/headers';
-// import { createQuote } from '../../utils/db_server_utils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -40,22 +39,8 @@ export async function GET(request: NextRequest) {
       );
     }
     
-    // Determine content type based on file extension
-    const getContentType = (path: string) => {
-      const ext = path.split('.').pop()?.toLowerCase();
-      switch (ext) {
-        case 'pdf': return 'application/pdf';
-        case 'doc': return 'application/msword';
-        case 'docx': return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-        case 'xls': return 'application/vnd.ms-excel';
-        case 'xlsx': return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-        case 'txt': return 'text/plain';
-        case 'csv': return 'text/csv';
-        default: return 'application/octet-stream';
-      }
-    };
-    
-    const contentType = getContentType(storagePath);
+    // Quote documents can only be pdfs
+    const contentType = 'application/pdf';
     const downloadFileName = fileName || filePath.split('/').pop() || 'document';
     
     // Return file as response

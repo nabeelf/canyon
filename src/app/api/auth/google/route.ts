@@ -15,8 +15,6 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
 
-
-
   if (!code) {
     // Initial OAuth request - redirect to Google
     const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
@@ -26,8 +24,6 @@ export async function GET(request: NextRequest) {
       `&scope=${encodeURIComponent('openid email profile')}` +
       `&access_type=offline` +
       `&prompt=consent`;
-
-
     return NextResponse.redirect(googleAuthUrl);
   }
 
@@ -49,8 +45,6 @@ export async function GET(request: NextRequest) {
 
     const tokens = await tokenResponse.json();
     
-
-
     if (tokens.error) {
       console.error('Token error details:', tokens);
       throw new Error(tokens.error_description || tokens.error);
@@ -64,11 +58,6 @@ export async function GET(request: NextRequest) {
     });
 
     const userInfo = await userResponse.json();
-
-    // Here you would typically:
-    // 1. Save user to your database
-    // 2. Create a session
-    // 3. Set cookies
 
     // Set user session cookies and redirect to clean URL
     const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL || 'http://localhost:3000';

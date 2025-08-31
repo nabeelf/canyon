@@ -2,16 +2,14 @@
  * Downloads a quote document using the quote document API endpoint
  * @param uri - The URI/path of the quote document
  * @param quoteName - The name of the quote (used for filename)
- * @param fileExtension - The file extension to use (defaults to '.pdf')
  * @returns Promise<void>
  */
 export async function downloadQuoteDocument(
   uri: string, 
   quoteName: string, 
-  fileExtension: string = '.pdf'
 ): Promise<void> {
   try {
-    const filename = `${quoteName}${fileExtension}`;
+    const filename = `${quoteName}.pdf`;
     const apiUrl = `/api/quote_document?path=${encodeURIComponent(uri)}&name=${encodeURIComponent(filename)}`;
     
     const response = await fetch(apiUrl);

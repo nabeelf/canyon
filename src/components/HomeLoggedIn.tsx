@@ -12,7 +12,7 @@ interface HomeProps {
 
 export function HomeLoggedIn({ userName }: HomeProps) {
   return (
-    <div className="w-full max-w-7xl mx-auto px-6 pt-8 pb-16 animate-slide-in-top">
+    <div className="w-full max-w-7xl mx-auto px-6 pb-16 animate-slide-in-top">
       {/* Welcome Section - Top Left */}
       <PageHeader
         title={`Welcome, ${userName}!`}

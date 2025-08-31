@@ -69,6 +69,39 @@ export async function readQuotes(): Promise<Quote[]> {
   }
 }
 
+// Read a single quote from the database by ID and populate the Quote object with the appropriate steps
+export async function readQuoteById(id: number): Promise<Quote | null> {
+  try {
+    const cookieStore = cookies();
+    const supabase = createClient(cookieStore);
+
+    const { data, error } = await supabase
+      .from('quotes')
+      .select(`
+          *,
+          steps:steps(*)
+      `)
+      .eq('id', id)
+      .order('step_number', { foreignTable: 'steps', ascending: true })
+      .single();
+
+    if (error) {
+      console.error('Error reading quote by ID:', error);
+      throw error;
+    }
+
+    if (!data) {
+      return null;
+    }
+
+    const quoteAndStepsFromDb: QuoteDbModel & {steps: StepDbModel[]} = data;
+    return mapDbQuoteAndStepsToQuote(quoteAndStepsFromDb);
+  } catch (error) {
+    console.error('Failed to read quote by ID:', error);
+    throw error;
+  }
+}
+
 // Create a new quote in the database
 export async function createQuote(quoteData: Omit<QuoteDbModel, 'id' | 'created_at' | 'updated_at'>): Promise<QuoteDbModel> {
   try {

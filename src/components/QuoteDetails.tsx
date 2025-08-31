@@ -3,21 +3,25 @@
 import { ApprovalStatus, Quote, ApprovalStep, ApprovalParty } from "@/app/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Download, Calendar, Building, Hash, FileText, Save, GripVertical, Trash2, Mail, User, DollarSign, Star, Users, Plus, XCircle } from "lucide-react";
+import { ArrowLeft, Download, Calendar, Building, Hash, FileText, Mail, User, DollarSign, Star, Users } from "lucide-react";
 import { downloadQuoteDocument } from "@/app/utils/download_file";
 import { StatusPill } from "@/components/ui/status-pill";
 import { useState, useMemo } from "react";
 import { APPROVER_LIST_BY_ID } from "@/app/consts";
+import { QuoteInfoCard, InfoItem } from "@/components/ui/quote-info-card";
+import { ApprovalFlowHeader } from "@/components/ui/approval-flow-header";
+import { ApprovalFlowStatus } from "@/components/ui/approval-flow-status";
+import { ApprovalFlowList } from "@/components/ui/approval-flow-list";
+import { ApprovalFlowActions } from "@/components/ui/approval-flow-actions";
 
-interface QuoteDetailsProps {
+type QuoteDetailsProps = {
   quote: Quote;
   onBack: () => void;
 }
 
-interface DeleteConfirmationDialogProps {
+type DeleteConfirmationDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
@@ -52,10 +56,10 @@ function DeleteConfirmationDialog({ open, onOpenChange, onConfirm }: DeleteConfi
   );
 }
 
-interface AddStepDialogProps {
+type AddStepDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (team: ApprovalParty, approverId: number) => void;
+  onConfirm: (approverId: number) => void;
   team: ApprovalParty;
   approverId: number | null;
   approversByTeam: Array<{ id: number; name: string; email: string; role: ApprovalParty }>;
@@ -126,7 +130,7 @@ function AddStepDialog({
             Cancel
           </Button>
           <Button
-            onClick={() => approverId && onConfirm(team, approverId)}
+            onClick={() => approverId && onConfirm(approverId)}
             disabled={!approverId}
           >
             Add Step
@@ -231,7 +235,7 @@ export function QuoteDetails({ quote, onBack }: QuoteDetailsProps) {
     setStepToDelete(null);
   };
 
-  const handleAddStep = (team: ApprovalParty, approverId: number) => {
+  const handleAddStep = (approverId: number) => {
     const selectedApprover = APPROVER_LIST_BY_ID.get(approverId);
     if (!selectedApprover) return;
     
@@ -307,10 +311,7 @@ export function QuoteDetails({ quote, onBack }: QuoteDetailsProps) {
         <Button
           onClick={async () => {
             try {
-              // Extract file extension from the actual filename
-              const fileExtension = quote.filename.includes('.') ? quote.filename.split('.').pop() : '';
-              const extension = fileExtension ? `.${fileExtension}` : '';
-              await downloadQuoteDocument(quote.filename, quote.name || 'Quote', extension);
+              await downloadQuoteDocument(quote.filename, quote.name || 'Quote');
             } catch (error) {
               console.error('Download failed:', error);
               alert('Download failed. Please try again.');
@@ -348,274 +349,107 @@ export function QuoteDetails({ quote, onBack }: QuoteDetailsProps) {
       {/* Approval Flow Card */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Approval Flow</CardTitle>
-              <CardDescription>Track the progress of your quote through the approval process</CardDescription>
-            </div>
-            {quote.step_number > 0 && (
-              <>
-                <Button
-                  onClick={handleSaveApprovalFlow}
-                  disabled={isSaving || !hasChanges || approvalSteps.some(step => step.status === ApprovalStatus.REJECTED)}
-                  variant={hasChanges ? "default" : "outline"}
-                  className="flex items-center gap-2"
-                  title={approvalSteps.some(step => step.status === ApprovalStatus.REJECTED) ? "Cannot save changes after a rejection" : ""}
-                >
-                  <Save className="w-4 h-4" />
-                  {isSaving ? 'Saving...' : hasChanges ? 'Save Changes' : 'No Changes'}
-                </Button>
-                {approvalSteps.some(step => step.status === ApprovalStatus.REJECTED) && (
-                  <span className="text-xs text-muted-foreground ml-2">
-                    (Flow frozen due to rejection)
-                  </span>
-                )}
-              </>
-            )}
-          </div>
+          <ApprovalFlowHeader
+            stepNumber={quote.step_number}
+            isSaving={isSaving}
+            hasChanges={hasChanges}
+            approvalSteps={approvalSteps}
+            onSave={handleSaveApprovalFlow}
+          />
         </CardHeader>
         <CardContent>
-          {!approvalSteps || quote.step_number === 0 ? (
-            <p className="text-muted-foreground text-center py-8">No approval steps defined yet.</p>
-          ) : approvalSteps.some(step => step.status === ApprovalStatus.REJECTED) ? (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-center gap-2 text-red-800">
-                <XCircle className="w-4 h-4" />
-                <span className="text-sm font-medium">Approval flow frozen</span>
-              </div>
-              <p className="text-xs text-red-700 mt-1">
-                A step has been rejected. No further changes can be made to the approval flow.
-              </p>
-            </div>
-          ) : null}
-          {approvalSteps && quote.step_number > 0 && (
-            <div className="space-y-4">              
-              {approvalSteps.map((step, index) => {
-                // Use the tracked current step position instead of trying to match by ID
-                const isCurrentStep = currentStepPosition === index;
-                
-                // Check if any previous step is rejected
-                const hasRejectedStepBefore = approvalSteps.slice(0, index).some(s => s.status === ApprovalStatus.REJECTED);
-                const isAfterRejectedStep = hasRejectedStepBefore;
-                
-                const canEdit = step.status === ApprovalStatus.PENDING && 
-                  (currentStepPosition === -1 || index >= currentStepPosition) &&
-                  !isAfterRejectedStep;
-                
-                return (
-                  <div key={step.id}>
-                    <div 
-                      className={`flex items-start gap-4 p-4 border rounded-lg transition-all duration-200 ${
-                        isDragging && dragIndex === index 
-                          ? 'opacity-50 scale-95 bg-muted/50' 
-                          : isAfterRejectedStep
-                            ? 'opacity-50 bg-gray-100 border-gray-200'
-                            : isCurrentStep
-                              ? 'border-blue-300 bg-blue-50'
-                              : step.status === ApprovalStatus.PENDING 
-                                ? 'hover:bg-muted/30' 
-                                : ''
-                      }`}
-                      draggable={canEdit && !isAfterRejectedStep}
-                      onDragStart={() => canEdit && !isAfterRejectedStep && handleDragStart(index)}
-                      onDragOver={(e) => canEdit && !isAfterRejectedStep && handleDragOver(e, index)}
-                      onDragEnd={handleDragEnd}
-                    >
-                      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mt-2 ${
-                        isAfterRejectedStep
-                          ? 'bg-gray-400 text-white'
-                          : isCurrentStep 
-                            ? 'bg-blue-500 text-white ring-2 ring-blue-200' 
-                            : 'bg-primary text-primary-foreground'
-                      }`}>
-                        {index + 1}
-                      </div>
-
-                      <div className="flex-1 relative">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium">{step.assignee.role}</span>
-                          {step.assignee && (
-                            <>
-                              <span className="text-muted-foreground">·</span>
-                              <span className="text-sm text-muted-foreground mt-0.5">{step.assignee.name}</span>
-                              <a
-                                href={`mailto:${step.assignee.email}`}
-                                className="ml-1 mt-0.25 hover:bg-blue-100 hover:text-blue-600 rounded transition-colors"
-                                title={`Send email to ${step.assignee.name}`}
-                              >
-                                <Mail className="w-3 h-3" />
-                              </a>
-                            </>
-                          )}
-                          {isCurrentStep && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              Current
-                            </span>
-                          )}
-                        </div>
-                        
-                        <div className="text-sm text-muted-foreground space-y-1">
-                          <div>Created: {formatDate(step.created_at)}</div>
-                          {step.info_requested && (
-                            <div className="text-red-600 text-sm">
-                              <span className="font-bold">Info requested:</span> {step.info_requested}
-                            </div>
-                          )}
-                        </div>
-                        
-                        {/* Status and Actions positioned in middle-right */}
-                        <div className="absolute top-1/2 right-0 transform -translate-y-1/2 flex items-center gap-2">
-                          <StatusPill status={step.status} size="sm" />
-                          {canEdit && (
-                            <>
-                              <button
-                                onClick={() => handleDeleteStep(index)}
-                                className="p-1 hover:bg-red-100 hover:text-red-600 rounded transition-colors"
-                                title="Delete approval step"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                              <div className="cursor-grab active:cursor-grabbing">
-                                <GripVertical className="w-5 h-5 text-muted-foreground" />
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    {index < quote.step_number - 1 && <Separator className="my-4" />}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <ApprovalFlowStatus approvalSteps={approvalSteps} />
           
-          {/* Add Step Button */}
-          <div className="mt-8 pt-6 border-t text-center">
-            <Button
-              onClick={() => setAddStepDialogOpen(true)}
-              disabled={approvalSteps.some(step => step.status === ApprovalStatus.REJECTED)}
-              variant={approvalSteps.some(step => step.status === ApprovalStatus.REJECTED) ? "secondary" : "outline"}
-              className={`flex items-center gap-2 mx-auto ${
-                approvalSteps.some(step => step.status === ApprovalStatus.REJECTED) 
-                  ? 'opacity-50 cursor-not-allowed' 
-                  : ''
-              }`}
-              title={approvalSteps.some(step => step.status === ApprovalStatus.REJECTED) ? "Cannot add steps after a rejection" : "Add a new approval step"}
-            >
-              <Plus className="w-4 h-4" />
-              Add Step
-            </Button>
-            {approvalSteps.some(step => step.status === ApprovalStatus.REJECTED) && (
-              <p className="text-sm text-muted-foreground mt-2">
-                Cannot add new steps after a rejection has occurred
-              </p>
-            )}
-          </div>
+          <ApprovalFlowList
+            approvalSteps={approvalSteps}
+            stepNumber={quote.step_number}
+            currentStepPosition={currentStepPosition}
+            isDragging={isDragging}
+            dragIndex={dragIndex}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+            onDeleteStep={handleDeleteStep}
+            formatDate={formatDate}
+          />
+          
+          <ApprovalFlowActions
+            approvalSteps={approvalSteps}
+            onAddStep={() => setAddStepDialogOpen(true)}
+          />
         </CardContent>
       </Card>
 
       {/* Company Information Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Company Information</CardTitle>
-          <CardDescription>Contact details and company information</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <Building className="w-4 h-4" />
-                Company Name
-              </div>
-              <p className="text-sm font-medium">{quote.company.name}</p>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <User className="w-4 h-4" />
-                Contact Person
-              </div>
-              <p className="text-sm">{quote.company.contact_name}</p>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <Mail className="w-4 h-4" />
-                Contact Email
-              </div>
-              <a
-                href={`mailto:${quote.company.contact_email}`}
-                className="text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2"
-              >
-                {quote.company.contact_email}
-                <Mail className="w-3 h-3" />
-              </a>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <QuoteInfoCard
+        title="Company Information"
+        description="Contact details and company information"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <InfoItem
+            icon={<Building className="w-4 h-4" />}
+            label="Company Name"
+            value={quote.company.name}
+          />
+          
+          <InfoItem
+            icon={<User className="w-4 h-4" />}
+            label="Contact Person"
+            value={quote.company.contact_name}
+          />
+          
+          <InfoItem
+            icon={<Mail className="w-4 h-4" />}
+            label="Contact Email"
+            value={quote.company.contact_email}
+            isEmail={true}
+          />
+        </div>
+      </QuoteInfoCard>
 
       {/* Quote Details Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quote Details</CardTitle>
-          <CardDescription>Business information about this quote</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <DollarSign className="w-4 h-4" />
-                Total Contract Value
-              </div>
-              <p className="text-sm font-medium">${quote.tcv.toLocaleString()}</p>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <Calendar className="w-4 h-4" />
-                Term (Months)
-              </div>
-              <p className="text-sm">{quote.term_months} months</p>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <Star className="w-4 h-4" />
-                Plan
-              </div>
-              <p className="text-sm font-medium">{quote.plan}</p>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <Users className="w-4 h-4" />
-                Number of Seats
-              </div>
-              <p className="text-sm">{quote.seats.toLocaleString()}</p>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <FileText className="w-4 h-4" />
-                Quote Type
-              </div>
-              <p className="text-sm font-medium">{quote.quote_type}</p>
-            </div>
-            
-
-            
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <Hash className="w-4 h-4" />
-                Discount Percentage
-              </div>
-              <p className="text-sm font-medium">15%</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <QuoteInfoCard
+        title="Quote Details"
+        description="Business information about this quote"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <InfoItem
+            icon={<DollarSign className="w-4 h-4" />}
+            label="Total Contract Value"
+            value={`$${quote.tcv.toLocaleString()}`}
+          />
+          
+          <InfoItem
+            icon={<Calendar className="w-4 h-4" />}
+            label="Term (Months)"
+            value={`${quote.term_months} months`}
+          />
+          
+          <InfoItem
+            icon={<Star className="w-4 h-4" />}
+            label="Plan"
+            value={quote.plan}
+          />
+          
+          <InfoItem
+            icon={<Users className="w-4 h-4" />}
+            label="Number of Seats"
+            value={quote.seats.toLocaleString()}
+          />
+          
+          <InfoItem
+            icon={<FileText className="w-4 h-4" />}
+            label="Quote Type"
+            value={quote.quote_type}
+          />
+          
+          <InfoItem
+            icon={<Hash className="w-4 h-4" />}
+            label="Discount Percentage"
+            value="15%"
+          />
+        </div>
+      </QuoteInfoCard>
 
       {/* Delete Confirmation Dialog */}
       <DeleteConfirmationDialog

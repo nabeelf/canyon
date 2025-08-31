@@ -146,7 +146,7 @@ The possible quote types are: ${Object.values(QuoteType).join(', ')}. If a user 
 
 Output an enterprise SaaS quote formatted in CLEAN, PROFESSIONAL markdown with the following structure:
 
-## Quote Header
+## Sales Quote
 - Company name and plan
 - Quote type and date
 - Clear, bold title

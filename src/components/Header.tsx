@@ -1,40 +1,18 @@
 "use client";
 
 import { useState } from 'react';
+import { logout } from '@/app/utils/auth';
 
 interface HeaderProps {
   isLoggedIn?: boolean;
-  setIsLoggedIn?: (value: boolean) => void; // Made optional
-  onLogoClick?: () => void; // Function to handle logo click
 }
 
-export function Header({ isLoggedIn = false, setIsLoggedIn, onLogoClick }: HeaderProps) {
+export function Header({ isLoggedIn = false }: HeaderProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = () => {
-    setIsLoggingOut(true);
-    console.log('Logout clicked, clearing cookies...');
-    
-    // Log current cookies for debugging
-    console.log('Current cookies:', document.cookie);
-    
-    // Clear cookies with multiple approaches to ensure they're removed
-    document.cookie = 'user_name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
-    document.cookie = 'user_email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
-    document.cookie = 'user_name=; max-age=0; path=/';
-    document.cookie = 'user_email=; max-age=0; path=/';
-    
-    // Also try clearing with domain
-    const hostname = window.location.hostname;
-    document.cookie = `user_name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${hostname}`;
-    document.cookie = `user_email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${hostname}`;
-    
-    console.log('Cookies cleared, updating state...');
-    
-    // Update the React state to trigger re-render if setter is provided
-    if (setIsLoggedIn) {
-      setIsLoggedIn(false);
-    }
+    setIsLoggingOut(true);    
+    logout();
     setIsLoggingOut(false);
   };
 
@@ -48,10 +26,10 @@ export function Header({ isLoggedIn = false, setIsLoggedIn, onLogoClick }: Heade
             src="/canyon-logo.png" 
             alt="Canyon Logo" 
             className="w-8 h-8 object-contain cursor-pointer mb-2"
-            onClick={isLoggedIn && onLogoClick ? onLogoClick : () => window.location.href = '/'}
+            onClick={() => window.location.href = '/'}
           />
           <button 
-            onClick={isLoggedIn && onLogoClick ? onLogoClick : () => window.location.href = '/'}
+            onClick={() => window.location.href = '/'}
             className="text-xl font-semibold hover:text-primary transition-colors cursor-pointer"
           >
             <span className="bg-gradient-to-r from-primary to-chart-1 bg-clip-text text-transparent">
@@ -65,16 +43,16 @@ export function Header({ isLoggedIn = false, setIsLoggedIn, onLogoClick }: Heade
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="text-muted-foreground hover:text-foreground transition-fast px-4 py-2 rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer animate-slide-in-right"
+              className="text-muted-foreground hover:text-foreground transition-fast px-4 py-2 rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isLoggingOut ? 'Logging out...' : 'Logout'}
             </button>
           ) : (
             <>
-              <a href="/pricing" className="text-muted-foreground hover:text-foreground transition-fast animate-slide-in-right">
+              <a href="/pricing" className="text-muted-foreground hover:text-foreground transition-fast">
                 Pricing
               </a>
-              <a href="/contact" className="text-muted-foreground hover:text-foreground transition-fast animate-slide-in-right">
+              <a href="/contact" className="text-muted-foreground hover:text-foreground transition-fast">
                 Contact
               </a>
             </>

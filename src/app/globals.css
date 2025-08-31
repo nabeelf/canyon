@@ -287,7 +287,7 @@ html {
   
   /* Sidebar button utilities */
   .sidebar-button {
-    @apply h-10 text-base transition-colors;
+    @apply h-10 text-base transition-colors cursor-pointer;
   }
   
   .sidebar-button-hover {
@@ -300,5 +300,404 @@ html {
   
   .sidebar-button-selected {
     @apply bg-gray-800 text-white;
+  }
+  
+  /* Chart utilities */
+  .chart-tooltip {
+    @apply bg-background border rounded-lg p-3 shadow-lg;
+  }
+  
+  .chart-tooltip-title {
+    @apply font-medium text-foreground;
+  }
+  
+  .chart-tooltip-item {
+    @apply text-sm text-muted-foreground;
+  }
+  
+  .chart-tooltip-value {
+    @apply font-semibold;
+  }
+  
+  .chart-title {
+    @apply flex items-center gap-2;
+  }
+  
+  .chart-icon {
+    @apply w-5 h-5 text-primary;
+  }
+  
+  .chart-description {
+    @apply text-muted-foreground;
+  }
+  
+  .chart-container {
+    @apply h-[300px] w-full;
+  }
+  
+  .chart-summary {
+    @apply grid grid-cols-2 gap-4 mt-6 pt-4 border-t;
+  }
+  
+  .summary-stat {
+    @apply text-center;
+  }
+  
+  .summary-stat-value {
+    @apply text-2xl font-bold;
+  }
+  
+  .summary-stat-label {
+    @apply text-sm text-muted-foreground;
+  }
+  
+  /* DataTable utilities */
+  .data-table-toolbar {
+    @apply flex items-center py-4;
+  }
+  
+  .data-table-search {
+    @apply max-w-sm;
+  }
+  
+  .data-table-columns-button {
+    @apply ml-auto;
+  }
+  
+  .data-table-pagination {
+    @apply flex items-center justify-end space-x-2 py-4;
+  }
+  
+  .data-table-pagination-info {
+    @apply text-muted-foreground flex-1 text-sm;
+  }
+  
+  .data-table-pagination-controls {
+    @apply space-x-2;
+  }
+  
+  .data-table-container {
+    @apply overflow-hidden rounded-md border;
+  }
+  
+  .data-table-row-clickable {
+    @apply cursor-pointer hover:bg-muted/50 transition-colors;
+  }
+  
+  /* Quote Details utilities */
+  .quote-header {
+    @apply flex items-center justify-between;
+  }
+  
+  .quote-back-button {
+    @apply flex items-center gap-2 cursor-pointer;
+  }
+  
+  .quote-download-button {
+    @apply flex items-center gap-2 cursor-pointer;
+  }
+  
+  .quote-info-card {
+    @apply w-full;
+  }
+  
+  .info-item {
+    @apply space-y-2;
+  }
+  
+  .info-item-label {
+    @apply flex items-center gap-2 text-sm font-medium text-muted-foreground;
+  }
+  
+  .info-item-value {
+    @apply text-sm font-medium;
+  }
+  
+  .info-item-link {
+    @apply text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-2;
+  }
+  
+  /* Approval Step utilities */
+  .approval-step {
+    @apply flex items-start gap-4 p-4 border rounded-lg transition-all duration-200;
+  }
+  
+  .approval-step-dragging {
+    @apply opacity-50 scale-95 bg-muted/50;
+  }
+  
+  .approval-step-drag-target {
+    @apply border-blue-300 bg-blue-50;
+  }
+  
+  .approval-step-frozen {
+    @apply opacity-50 bg-gray-100 border-gray-200;
+  }
+  
+  .approval-step-current {
+    @apply border-blue-300 bg-blue-50;
+  }
+  
+  .approval-step-number {
+    @apply flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium mt-2 bg-primary text-primary-foreground;
+  }
+  
+  .approval-step-number-frozen {
+    @apply bg-gray-400 text-white;
+  }
+  
+  .approval-step-number-current {
+    @apply bg-blue-500 text-white ring-2 ring-blue-200;
+  }
+  
+  .approval-step-content {
+    @apply flex-1 relative;
+  }
+  
+  .approval-step-header {
+    @apply flex items-center gap-2 mb-1;
+  }
+  
+  .approval-step-role {
+    @apply font-medium;
+  }
+  
+  .approval-step-separator {
+    @apply text-muted-foreground;
+  }
+  
+  .approval-step-name {
+    @apply text-sm text-muted-foreground mt-0.5;
+  }
+  
+  .approval-step-email {
+    @apply ml-1 mt-0.25 hover:bg-blue-100 hover:text-blue-600 rounded transition-colors;
+  }
+  
+  .approval-step-current-badge {
+    @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800;
+  }
+  
+  .approval-step-details {
+    @apply text-sm text-muted-foreground space-y-1;
+  }
+  
+  .approval-step-info-requested {
+    @apply text-red-600 text-sm;
+  }
+  
+  .approval-step-actions {
+    @apply absolute top-1/2 right-0 transform -translate-y-1/2 flex items-center gap-2;
+  }
+  
+  .approval-step-delete-button {
+    @apply p-1 hover:bg-red-100 hover:text-red-600 rounded transition-colors;
+  }
+  
+  .approval-step-drag-handle {
+    @apply cursor-grab active:cursor-grabbing;
+  }
+  
+  .approval-step-drag-handle svg {
+    @apply text-muted-foreground;
+  }
+  
+  /* Approval Flow utilities */
+  .approval-flow-warning {
+    @apply mb-4 p-3 bg-red-50 border border-red-200 rounded-lg;
+  }
+  
+  .approval-flow-warning-header {
+    @apply flex items-center gap-2 text-red-800;
+  }
+  
+  .approval-flow-warning-title {
+    @apply text-sm font-medium;
+  }
+  
+  .approval-flow-warning-message {
+    @apply text-xs text-red-700 mt-1;
+  }
+  
+  .approval-flow-actions {
+    @apply mt-8 pt-6 border-t text-center;
+  }
+  
+  .approval-flow-add-button {
+    @apply flex items-center gap-2 mx-auto;
+  }
+  
+  .approval-flow-add-button-disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+  
+  .approval-flow-add-message {
+    @apply text-sm text-muted-foreground mt-2;
+  }
+  
+  /* Chat Interface utilities */
+  .chat-interface {
+    @apply bg-card border rounded-lg p-6;
+  }
+  
+  .chat-header {
+    @apply flex items-center justify-between mb-4;
+  }
+  
+  .chat-title {
+    @apply text-xl font-semibold;
+  }
+  
+  .chat-clear-button {
+    @apply text-sm;
+  }
+  
+  .chat-history {
+    @apply mb-6 max-h-96 overflow-y-auto space-y-4 p-4 bg-muted/30 rounded-md;
+  }
+  
+  .chat-message {
+    @apply flex;
+  }
+  
+  .chat-message-user {
+    @apply justify-end;
+  }
+  
+  .chat-message-assistant {
+    @apply justify-start;
+  }
+  
+  .chat-message-content {
+    @apply max-w-[80%] p-3 rounded-lg;
+  }
+  
+  .chat-message-content-user {
+    @apply bg-primary text-primary-foreground;
+  }
+  
+  .chat-message-content-assistant {
+    @apply bg-background border;
+  }
+  
+  .chat-message-text {
+    @apply text-sm whitespace-pre-wrap;
+  }
+  
+  .chat-form {
+    @apply space-y-4;
+  }
+  
+  .chat-input-container {
+    @apply space-y-2;
+  }
+  
+  .chat-input-label {
+    @apply block text-sm font-medium text-muted-foreground mb-2;
+  }
+  
+  .chat-textarea {
+    @apply w-full h-32 p-3 border border-input rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+  }
+  
+  .chat-submit-button {
+    @apply w-full;
+  }
+  
+  .chat-error {
+    @apply mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md;
+  }
+  
+  .chat-error-text {
+    @apply text-destructive text-sm;
+  }
+  
+  /* Quote Preview utilities */
+  .quote-preview {
+    @apply mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg shadow-sm;
+  }
+  
+  .quote-preview-header {
+    @apply flex items-center justify-between mb-6;
+  }
+  
+  .quote-preview-title {
+    @apply space-y-2;
+  }
+  
+  .quote-preview-name {
+    @apply text-2xl font-bold text-gray-900;
+  }
+  
+  .quote-preview-subtitle {
+    @apply text-gray-600;
+  }
+  
+  .quote-preview-actions {
+    @apply flex items-center gap-3;
+  }
+  
+  .quote-save-button {
+    @apply bg-green-600 hover:bg-green-700 text-white flex items-center gap-3 shadow-md;
+  }
+  
+  .quote-pdf-button {
+    @apply bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-3 shadow-md;
+  }
+  
+  .quote-loading-spinner {
+    @apply w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin;
+  }
+  
+  .quote-save-message {
+    @apply mb-4 p-3 rounded-md border;
+  }
+  
+  .quote-save-success {
+    @apply bg-green-50 border-green-200 text-green-800;
+  }
+  
+  .quote-save-error {
+    @apply bg-red-50 border-red-200 text-red-800;
+  }
+  
+  .quote-save-text {
+    @apply text-sm font-medium;
+  }
+  
+  .quote-preview-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+  
+  .quote-preview-card {
+    @apply bg-white p-4 rounded-lg border border-gray-200;
+  }
+  
+  .quote-preview-card-title {
+    @apply font-semibold text-gray-700 mb-3 text-sm uppercase tracking-wide;
+  }
+  
+  .quote-preview-card-content {
+    @apply space-y-2;
+  }
+  
+  .quote-preview-item {
+    @apply space-y-1;
+  }
+  
+  .quote-preview-label {
+    @apply text-gray-500 text-sm;
+  }
+  
+  .quote-preview-value {
+    @apply font-medium text-gray-900;
+  }
+  
+  .quote-preview-value-highlight {
+    @apply font-bold text-2xl text-blue-600;
+  }
+  
+  .quote-preview-markdown {
+    @apply hidden;
   }
 }

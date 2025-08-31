@@ -2,7 +2,7 @@
 
 import { Button } from "./ui/button";
 
-export function HeroSection() {
+export function HomeLoggedOut() {
   const handleGoogleSignIn = () => {
     // Redirect to Google OAuth
     window.location.href = '/api/auth/google';
