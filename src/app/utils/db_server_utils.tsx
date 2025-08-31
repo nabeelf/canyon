@@ -23,7 +23,7 @@ const mapDbQuoteAndStepsToQuote = (quote: QuoteDbModel & {steps: StepDbModel[]})
     updated_at: quote.updated_at,
     filename: quote.filename,
     name: quote.name,
-    company: company as Company,
+    company,
     current_step: quote.steps[quote.step_number - 1] ? mapDbStepToApprovalStep(quote.steps[quote.step_number - 1]) : null,
     approvalSteps: quote.steps.map(mapDbStepToApprovalStep),
     step_number: quote.step_number,
