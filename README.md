@@ -52,40 +52,6 @@ steps.quote_id -> quotes.id
 steps.assignee_id -> users.id
 ```
 
-## 📁 Project Structure
-
-```
-src/
-├── app/
-│   ├── api/                    # API routes
-│   │   ├── auth/google/        # Google OAuth
-│   │   ├── approval-flow/      # Approval workflow management
-│   │   ├── create-completion/  # OpenAI AI completion
-│   │   ├── generate-pdf/       # PDF generation with Puppeteer
-│   │   ├── quote_document/     # PDF document management
-│   │   └── quotes/             # Quote CRUD operations
-│   ├── components/             # React components
-│   │   ├── ui/                 # Shadcn UI components
-│   │   │   ├── approval-flow-*.tsx  # Approval workflow components
-│   │   │   ├── chat-interface.tsx   # AI chat interface
-│   │   │   └── quote-preview.tsx     # Quote preview component
-│   │   ├── charts/             # Chart components (Recharts)
-│   │   ├── DataTable.tsx       # Quotes data table
-│   │   ├── CreateQuote.tsx     # AI quote builder
-│   │   ├── QuoteDetails.tsx    # Quote detail view with drag-and-drop
-│   │   └── Sidebar.tsx         # Navigation sidebar
-│   ├── utils/                  # Utility functions
-│   │   ├── db_server_utils.tsx # Database operations with error handling
-│   │   ├── supabase/           # Supabase client configs
-│   │   ├── pdf-generator.ts    # PDF generation utilities
-│   │   └── download_file.tsx   # File download utilities
-│   ├── types.ts                # TypeScript type definitions
-│   ├── consts.tsx              # Application constants
-│   └── page.tsx                # Main application page
-├── components/                  # Shared components
-└── public/                     # Static assets
-```
-
 ## 🧠 Complex Logic Explained
 
 ### 1. Drag-and-Drop Approval Workflow (`QuoteDetails.tsx`)
