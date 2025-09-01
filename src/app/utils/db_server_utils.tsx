@@ -5,10 +5,15 @@ import { APPROVER_LIST_BY_ID, COMPANY_LIST_BY_ID } from '../consts';
 
 
 const mapDbStepToApprovalStep = (step: StepDbModel): ApprovalStep => {
+  const assignee = APPROVER_LIST_BY_ID.get(step.assignee_id);
+  if (!assignee) {
+    throw new Error(`Approver with ID ${step.assignee_id} not found`);
+  }
+  
   return {
     id: step.id,
     status: step.status,
-    assignee: APPROVER_LIST_BY_ID.get(step.assignee_id)!,
+    assignee,
     created_at: step.created_at,
     updated_at: step.updated_at,
     info_requested: step.info_requested,
@@ -16,7 +21,11 @@ const mapDbStepToApprovalStep = (step: StepDbModel): ApprovalStep => {
 };
 
 const mapDbQuoteAndStepsToQuote = (quote: QuoteDbModel & {steps: StepDbModel[]}): Quote => {
-  const company = COMPANY_LIST_BY_ID.get(quote.company_id)!;
+  const company = COMPANY_LIST_BY_ID.get(quote.company_id);
+  if (!company) {
+    throw new Error(`Company with ID ${quote.company_id} not found`);
+  }
+  
   return {
     id: quote.id,
     created_at: quote.created_at,
@@ -59,8 +68,14 @@ export async function readQuotes(): Promise<Quote[]> {
     const quotesAndStepsFromDb: (QuoteDbModel & {steps: StepDbModel[]})[] = data ?? [];
     
     const quotes: Quote[] = quotesAndStepsFromDb.map((quote) => {
-      return mapDbQuoteAndStepsToQuote(quote);
-    });
+      try {
+        return mapDbQuoteAndStepsToQuote(quote);
+      } catch (error) {
+        console.error(`Error mapping quote ${quote.id}:`, error);
+        // Skip quotes that can't be mapped due to missing company or approver data
+        return null;
+      }
+    }).filter((quote): quote is Quote => quote !== null);
 
     return quotes;
   } catch (error) {
@@ -95,7 +110,12 @@ export async function readQuoteById(id: number): Promise<Quote | null> {
     }
 
     const quoteAndStepsFromDb: QuoteDbModel & {steps: StepDbModel[]} = data;
-    return mapDbQuoteAndStepsToQuote(quoteAndStepsFromDb);
+    try {
+      return mapDbQuoteAndStepsToQuote(quoteAndStepsFromDb);
+    } catch (error) {
+      console.error(`Error mapping quote ${data.id}:`, error);
+      throw new Error(`Failed to map quote data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   } catch (error) {
     console.error('Failed to read quote by ID:', error);
     throw error;
@@ -164,7 +184,7 @@ export async function deleteQuote(id: string): Promise<void> {
 }
 
 // Update approval flow for a quote
-export async function updateApprovalFlow(quoteId: number, approvalSteps: ApprovalStep[]): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+export async function updateApprovalFlow(quoteId: number, approvalSteps: ApprovalStep[]): Promise<any> {
   try {
     const cookieStore = cookies();
     const supabase = createClient(cookieStore);

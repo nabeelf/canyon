@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface QuoteInfoCardProps {
+type QuoteInfoCardProps = {
   title: string;
   description: string;
   children: ReactNode;
@@ -21,7 +21,7 @@ export function QuoteInfoCard({ title, description, children }: QuoteInfoCardPro
   );
 }
 
-interface InfoItemProps {
+type InfoItemProps = {
   icon: ReactNode;
   label: string;
   value: string | number;

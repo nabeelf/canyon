@@ -1,12 +1,8 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 import { marked } from "marked";
 import { QuoteMetadata } from "@/app/types";
 
-
-
-// Create HTML content for PDF
+// Create HTML content for PDF. Make custom headers and styling for our quote format and use marked to convert markdown content to HTML
 const createPDFHTML = async (markdownContent: string, quoteMetadata: QuoteMetadata | null): Promise<string> => {
   const cleanMarkdown = markdownContent.trim();
   const html = await marked(cleanMarkdown);
@@ -356,6 +352,7 @@ const createPDFHTML = async (markdownContent: string, quoteMetadata: QuoteMetada
   `;
 };
 
+// Convert mardown to HTML, then use puppeteer to generate a PDF from the HTML
 export async function POST(request: NextRequest) {
   try {
     const { markdownContent, quoteMetadata } = await request.json();
@@ -364,17 +361,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Markdown content is required' }, { status: 400 });
     }
 
-    // Create HTML content
     const htmlContent = await createPDFHTML(markdownContent, quoteMetadata);
 
     // Determine environment and load appropriate Puppeteer
-    const isVercel = !!process.env.VERCEL_ENV;
+    const isProduction = !!process.env.VERCEL_ENV;
     let puppeteer: any;
     let launchOptions: any = {
       headless: true,
     };
 
-    if (isVercel) {
+    if (isProduction) {
       // Use puppeteer-core with @sparticuz/chromium on Vercel
       const chromium = (await import("@sparticuz/chromium")).default;
       puppeteer = await import("puppeteer-core");
@@ -385,7 +381,7 @@ export async function POST(request: NextRequest) {
         executablePath: await chromium.executablePath(),
       };
     } else {
-      // Use regular puppeteer for local development with macOS fixes
+      // Use regular puppeteer for local development
       puppeteer = await import("puppeteer");
       
       // Try to use system Chrome on macOS if available
@@ -402,7 +398,7 @@ export async function POST(request: NextRequest) {
           ],
         };
       } else {
-        // Fallback to bundled Chrome with macOS fixes
+        // Fallback to bundled Chrome if macOS system Chrome is not available
         launchOptions = {
           ...launchOptions,
           args: [
@@ -423,30 +419,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Launch browser with retry mechanism
-    let browser;
-    let retryCount = 0;
-    const maxRetries = 3;
-    
-    while (retryCount < maxRetries) {
-      try {
-        browser = await puppeteer.launch(launchOptions);
-        break;
-      } catch (error) {
-        retryCount++;
-        console.error(`Browser launch attempt ${retryCount} failed:`, error);
-        
-        if (retryCount >= maxRetries) {
-          throw new Error(`Failed to launch browser after ${maxRetries} attempts: ${error}`);
-        }
-        
-        // Wait a bit before retrying
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
-    }
+    // Launch browser
+    const browser = await puppeteer.launch(launchOptions);
     const page = await browser.newPage();
 
-    // Set content and wait for it to load with timeout
+    // Set content to HTML content and wait for it to load with timeout
     await page.setContent(htmlContent, { 
       waitUntil: "networkidle0",
       timeout: 30000 

@@ -167,7 +167,7 @@ export function Quotes({ quotes, onQuotesChange }: { quotes: Quote[]; onQuotesCh
         )
       },
     },
-  ], []);
+  ], [handleViewDetails]);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-6 pb-8 animate-slide-in-top">

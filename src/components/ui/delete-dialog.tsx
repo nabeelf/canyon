@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-interface DeleteDialogProps {
+type DeleteDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onDelete: () => Promise<void>;

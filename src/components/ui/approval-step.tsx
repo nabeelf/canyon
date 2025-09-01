@@ -1,4 +1,4 @@
-import { ApprovalStep, ApprovalStatus } from "@/app/types";
+import { ApprovalStep } from "@/app/types";
 import { StatusPill } from "@/components/ui/status-pill";
 import { Mail, Trash2, GripVertical } from "lucide-react";
 

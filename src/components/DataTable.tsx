@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/table"
 import { DeleteDialog } from "@/components/ui/delete-dialog"
 
-interface DataTableProps<TData> {
+type DataTableProps<TData> = {
   data: TData[];
   columns: ColumnDef<TData>[];
   onViewDetails?: (item: TData) => void;

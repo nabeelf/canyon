@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import { Button } from "@/components/ui/button";
 import { QuoteMetadata } from "@/app/types";
 
-interface QuotePreviewProps {
+type QuotePreviewProps = {
   quoteMetadata: QuoteMetadata;
   markdownContent: string;
   isSavingQuote: boolean;

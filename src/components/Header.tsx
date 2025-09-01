@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { logout } from '@/app/utils/auth';
 
-interface HeaderProps {
+type HeaderProps = {
   isLoggedIn?: boolean;
 }
 

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-interface ChatMessage {
+type ChatMessage = {
   role: 'user' | 'assistant';
   content: string;
 }
 
-interface ChatInterfaceProps {
+type ChatInterfaceProps = {
   chatHistory: ChatMessage[];
   isLoading: boolean;
   error: string;

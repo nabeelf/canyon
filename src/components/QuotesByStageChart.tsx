@@ -1,4 +1,3 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,7 +32,7 @@ const quotesByStageData = [
   },
 ];
 
-const CustomTooltip = ({ active, payload }: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -51,10 +50,10 @@ const CustomTooltip = ({ active, payload }: any) => { // eslint-disable-line @ty
   return null;
 };
 
-const CustomLegend = ({ payload }: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+const CustomLegend = ({ payload }: any) => {
   return (
     <div className="flex flex-wrap justify-center gap-4 mt-4">
-      {payload.map((entry: any, index: number) => ( // eslint-disable-line @typescript-eslint/no-explicit-any
+      {payload.map((entry: any, index: number) => (
         <div key={`legend-${index}`} className="flex items-center gap-2">
           <div
             className="w-3 h-3 rounded-full"
@@ -141,7 +140,7 @@ export function QuotesByStageChart() {
         </div>
         
         {/* Custom Legend */}
-        <CustomLegend payload={quotesByStageData.map((item, index) => ({
+        <CustomLegend payload={quotesByStageData.map((item) => ({
           value: item.stage,
           color: item.color,
           type: 'circle'

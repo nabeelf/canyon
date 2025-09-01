@@ -1,5 +1,4 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-interface ChartTooltipProps {
+type ChartTooltipProps = {
   active?: boolean;
   payload?: any[];
   label?: string;
@@ -19,7 +18,7 @@ export function ChartTooltip({ active, payload, label, children }: ChartTooltipP
   );
 }
 
-interface ChartTooltipItemProps {
+type ChartTooltipItemProps = {
   label: string;
   value: string | number;
   color?: string;

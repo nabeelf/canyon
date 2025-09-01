@@ -2,7 +2,7 @@ import { ApprovalStatus, ApprovalStep } from "@/app/types";
 import { Separator } from "@/components/ui/separator";
 import { ApprovalStepItem } from "@/components/ui/approval-step";
 
-interface ApprovalFlowListProps {
+type ApprovalFlowListProps = {
   approvalSteps: ApprovalStep[];
   stepNumber: number;
   currentStepPosition: number;

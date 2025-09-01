@@ -1,7 +1,7 @@
 import { ApprovalStatus, ApprovalStep } from "@/app/types";
 import { XCircle } from "lucide-react";
 
-interface ApprovalFlowStatusProps {
+type ApprovalFlowStatusProps = {
   approvalSteps: ApprovalStep[];
 }
 

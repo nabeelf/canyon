@@ -1,7 +1,7 @@
 import { CheckCircle, XCircle, Clock, User } from "lucide-react";
 import { ApprovalParty, ApprovalStatus } from "@/app/types";
 
-interface StatusPillProps {
+type StatusPillProps = {
   status: ApprovalStatus;
   approvalParty?: ApprovalParty;
   size?: "sm" | "md" | "lg";

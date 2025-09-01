@@ -1,4 +1,4 @@
-interface LoadingProps {
+type LoadingProps = {
   message?: string;
   fullScreen?: boolean;
 }
