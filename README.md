@@ -42,9 +42,9 @@ Canyon is a modern, AI-powered enterprise quote management application built wit
 ```sql
 -- Core tables
 quotes: Quote information and metadata
-companies: Company details and contacts
 steps: Approval workflow steps
-users: User authentication and roles
+companies: Company details and contacts [does not need to change for demo purposes, currently a static list in memory]
+users: User authentication and roles [does not need to change for demo purposes, currently a static list in memory]
 
 -- Key relationships
 quotes.company_id -> companies.id
