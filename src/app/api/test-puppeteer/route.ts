@@ -12,27 +12,14 @@ export async function GET(_request: NextRequest) {
     };
 
     if (isVercel) {
-      // Use puppeteer with built-in browser download on Vercel
-      puppeteer = await import("puppeteer");
-      
-      // Download and install browser if needed
-      const install = require('puppeteer/internal/node/install.js').downloadBrowser;
-      await install();
+      // Use puppeteer-core with @sparticuz/chromium on Vercel
+      const chromium = (await import("@sparticuz/chromium")).default;
+      puppeteer = await import("puppeteer-core");
       
       launchOptions = {
         ...launchOptions,
-        args: [
-          "--use-gl=angle",
-          "--use-angle=swiftshader", 
-          "--single-process",
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage",
-          "--disable-gpu",
-          "--no-first-run",
-          "--no-zygote",
-          "--disable-extensions",
-        ],
+        args: chromium.args,
+        executablePath: await chromium.executablePath(),
       };
     } else {
       // Use regular puppeteer for local development with macOS fixes
