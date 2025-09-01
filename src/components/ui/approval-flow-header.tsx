@@ -2,7 +2,7 @@ import { ApprovalStatus, ApprovalStep } from "@/app/types";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 
-interface ApprovalFlowHeaderProps {
+type ApprovalFlowHeaderProps = {
   stepNumber: number;
   isSaving: boolean;
   hasChanges: boolean;
