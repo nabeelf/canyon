@@ -387,13 +387,6 @@ Run the following SQL in your Supabase SQL editor:
 
 ```sql
 -- Create tables
-CREATE TABLE companies (
-  id BIGSERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
 CREATE TABLE quotes (
   id BIGSERIAL PRIMARY KEY,
   name TEXT NOT NULL,
@@ -425,7 +418,6 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('quote-documents', 'quote-documents', false);
 
 -- Enable RLS
-ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE quotes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE steps ENABLE ROW LEVEL SECURITY;
 ```
