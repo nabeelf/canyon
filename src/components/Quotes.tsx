@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTable } from "./DataTable";
-import { Quote, ApprovalStatus } from "@/app/types";
+import { Quote, ApprovalStatus, ApprovalParty, Company } from "@/app/types";
 import { useMemo } from "react";
 import { PageHeader } from "./PageHeader";
 import { ColumnDef } from "@tanstack/react-table";
@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { StatusPill } from "@/components/ui/status-pill";
 import { downloadQuoteDocument } from "@/app/utils/download_file";
 import { useRouter } from "next/navigation";
+import { COMPANY_LIST_BY_ID } from "@/app/consts";
 
 
 export function Quotes({ quotes, onQuotesChange }: { quotes: Quote[]; onQuotesChange?: () => void }) {
@@ -19,6 +20,34 @@ export function Quotes({ quotes, onQuotesChange }: { quotes: Quote[]; onQuotesCh
   const handleViewDetails = (quote: Quote) => {
     router.push(`/quote/${quote.id}`);
   };
+
+  // Create filter options for status and company
+  const statusFilterOptions = [
+    { value: ApprovalStatus.PENDING, label: "Pending" },
+    { value: ApprovalStatus.APPROVED, label: "Approved" },
+    { value: ApprovalStatus.REJECTED, label: "Rejected" },
+    { value: ApprovalStatus.INFO_REQUESTED, label: "Info Requested" },
+  ]
+
+  const companyFilterOptions = 
+    Array.from(COMPANY_LIST_BY_ID.values()).map((company: Company) => ({
+      value: company.name,
+      label: company.name
+    }))
+
+  // Define filter configurations
+  const filters = useMemo(() => [
+    {
+      column: "status",
+      placeholder: "Filter by Status",
+      options: statusFilterOptions
+    },
+    {
+      column: "company",
+      placeholder: "Filter by Company",
+      options: companyFilterOptions
+    }
+  ], [statusFilterOptions, companyFilterOptions]);
 
   // Define quote columns for the DataTable
   const quoteColumns: ColumnDef<Quote>[] = useMemo(() => [
@@ -44,6 +73,7 @@ export function Quotes({ quotes, onQuotesChange }: { quotes: Quote[]; onQuotesCh
       id: "status",
       accessorFn: (row) => row.current_step?.status || "No Status",
       enableSorting: false,
+      enableColumnFilter: true,
       header: () => {
         return (
           <div className="w-24 pl-0 ml-2 font-medium">
@@ -59,6 +89,7 @@ export function Quotes({ quotes, onQuotesChange }: { quotes: Quote[]; onQuotesCh
     {
       accessorKey: "company",
       accessorFn: (row) => row.company.name || "No Company",
+      enableColumnFilter: true,
       header: () => <div className="pl-0 ml-2 font-medium">Company</div>,
       cell: ({ row }) => (
         <div className="ml-2 font-medium">{row.original.company.name}</div>
@@ -184,6 +215,7 @@ export function Quotes({ quotes, onQuotesChange }: { quotes: Quote[]; onQuotesCh
           searchColumn="name"
           searchPlaceholder="Search quotes by name..."
           enableDelete={true}
+          filters={filters}
           onDelete={async (ids) => {
             // Delete each selected quote
             for (const id of ids) {

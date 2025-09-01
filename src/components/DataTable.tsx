@@ -33,6 +33,18 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { DeleteDialog } from "@/components/ui/delete-dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
+type FilterOption = {
+  value: string;
+  label: string;
+}
+
+type FilterConfig = {
+  column: string;
+  placeholder: string;
+  options: FilterOption[];
+}
 
 type DataTableProps<TData> = {
   data: TData[];
@@ -46,6 +58,7 @@ type DataTableProps<TData> = {
   getId?: (item: TData) => string;
   deleteDialogTitle?: string;
   deleteDialogDescription?: string;
+  filters?: FilterConfig[];
 }
 
 export function DataTable<TData>({ 
@@ -59,7 +72,8 @@ export function DataTable<TData>({
   onDelete,
   getId,
   deleteDialogTitle = "Delete Selected Items",
-  deleteDialogDescription = "Are you sure you want to delete the selected items? This action cannot be undone."
+  deleteDialogDescription = "Are you sure you want to delete the selected items? This action cannot be undone.",
+  filters = []
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -142,7 +156,7 @@ export function DataTable<TData>({
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center py-4 gap-4">
         {/* Search Input */}
         {searchColumn && (
           <Input
@@ -154,6 +168,52 @@ export function DataTable<TData>({
             className="max-w-sm"
           />
         )}
+        
+        {/* Dropdown Filters */}
+        {filters.map((filter) => (
+          <Select
+            key={filter.column}
+            value={(table.getColumn(filter.column)?.getFilterValue() as string) ?? ""}
+            onValueChange={(value) => {
+              table.getColumn(filter.column)?.setFilterValue(value === "all" ? "" : value)
+            }}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={filter.placeholder} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              {filter.options.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ))}
+        
+        {/* Clear Filters Button */}
+        {(() => {
+          // Check if any filters are active
+          const hasActiveFilters = filters.some(filter => 
+            table.getColumn(filter.column)?.getFilterValue()
+          ) || (searchColumn && table.getColumn(searchColumn)?.getFilterValue());
+          
+          if (!hasActiveFilters) return null;
+          
+          return (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                // Clear all filters
+                table.resetColumnFilters();
+              }}
+            >
+              Clear Filters
+            </Button>
+          );
+        })()}
         
         {/* Delete Selected Button */}
         {enableDelete && table.getFilteredSelectedRowModel().rows.length > 0 && (
