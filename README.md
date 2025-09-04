@@ -18,7 +18,7 @@ Canyon is a modern, AI-powered enterprise quote management application built wit
 - **Real-time Updates**: Live data synchronization
 - **Role-based Access**: Approval party and role management
 - **File Storage**: Secure PDF storage with Supabase Storage
-- **Authentication**: Google OIDC (OpenID Connect) SSO integration
+- **Authentication**: Google OIDC (OpenID Connect) SSO integration [this can later be changed to SAML for higher-grade security]
 - **Drag-and-Drop**: Interactive approval step reordering
 
 ## 🏗️ Architecture
