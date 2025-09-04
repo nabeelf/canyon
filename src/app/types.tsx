@@ -36,6 +36,10 @@ export enum ViewType {
 export type AuthStatus = {
     isLoggedIn: boolean;
     userName: string;
+    userId: string;
+    userEmail: string;
+    userPicture: string;
+    emailVerified: boolean;
 }
 
 export type Company = {
