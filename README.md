@@ -57,24 +57,6 @@ Canyon uses **Google OIDC (OpenID Connect)** for secure Single Sign-On authentic
 4. **User data extracted** → Rich user information from verified token
 5. **Session established** → Secure cookies with OIDC user data
 
-#### **OIDC User Data**
-```typescript
-interface GoogleIDToken {
-  iss: string;        // Issuer (Google)
-  sub: string;        // Unique user ID
-  aud: string;        // Audience (your app)
-  exp: number;        // Expiration time
-  iat: number;        // Issued at
-  email: string;       // User email
-  email_verified: boolean; // Email verification status
-  name: string;       // Full name
-  picture: string;    // Profile picture URL
-  given_name: string; // First name
-  family_name: string; // Last name
-  locale: string;     // User locale
-}
-```
-
 #### **Security Benefits**
 - **Cryptographic Verification**: Validates token signatures using Google's public keys
 - **Tamper Protection**: Ensures user data hasn't been modified
