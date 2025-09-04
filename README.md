@@ -18,7 +18,7 @@ Canyon is a modern, AI-powered enterprise quote management application built wit
 - **Real-time Updates**: Live data synchronization
 - **Role-based Access**: Approval party and role management
 - **File Storage**: Secure PDF storage with Supabase Storage
-- **Authentication**: Google OAuth integration
+- **Authentication**: Google OIDC (OpenID Connect) SSO integration
 - **Drag-and-Drop**: Interactive approval step reordering
 
 ## 🏗️ Architecture
@@ -35,8 +35,59 @@ Canyon is a modern, AI-powered enterprise quote management application built wit
 - **API Routes**: Next.js API routes for backend logic
 - **Database**: Supabase (PostgreSQL) with Row Level Security
 - **Storage**: Supabase Storage for PDF documents
-- **Authentication**: Google OAuth with NextAuth.js
+- **Authentication**: Google OIDC (OpenID Connect) with JWT verification
 - **AI Integration**: OpenAI GPT-5 API for quote generation
+
+## 🔐 Authentication & Security
+
+### Google OIDC (OpenID Connect) SSO Implementation
+
+Canyon uses **Google OIDC (OpenID Connect)** for secure Single Sign-On authentication, providing enterprise-grade security with modern JWT-based identity verification.
+
+#### **OIDC Features**
+- **JWT Token Verification**: Cryptographically verifies Google's ID tokens using RS256 signatures
+- **Rich User Data**: Extracts verified user information including email verification status, profile pictures, and unique user IDs
+- **Secure Session Management**: Enhanced cookie-based sessions with OIDC claims
+- **Fallback Support**: Graceful fallback to OAuth 2.0 userinfo endpoint if ID tokens are unavailable
+
+#### **Authentication Flow**
+1. **User clicks "Continue with Google"** → Redirects to Google OAuth consent screen
+2. **Google sends ID token** → JWT containing user data with cryptographic signature
+3. **App verifies JWT** → Validates signature using Google's public keys
+4. **User data extracted** → Rich user information from verified token
+5. **Session established** → Secure cookies with OIDC user data
+
+#### **OIDC User Data**
+```typescript
+interface GoogleIDToken {
+  iss: string;        // Issuer (Google)
+  sub: string;        // Unique user ID
+  aud: string;        // Audience (your app)
+  exp: number;        // Expiration time
+  iat: number;        // Issued at
+  email: string;       // User email
+  email_verified: boolean; // Email verification status
+  name: string;       // Full name
+  picture: string;    // Profile picture URL
+  given_name: string; // First name
+  family_name: string; // Last name
+  locale: string;     // User locale
+}
+```
+
+#### **Security Benefits**
+- **Cryptographic Verification**: Validates token signatures using Google's public keys
+- **Tamper Protection**: Ensures user data hasn't been modified
+- **Expiration Handling**: Automatic token expiration validation
+- **Audience Validation**: Verifies tokens are intended for your application
+- **Issuer Verification**: Confirms tokens come from Google
+
+#### **Environment Variables**
+```bash
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_REDIRECT_URI=https://yourdomain.com/api/auth/google/callback
+```
 
 ### Database Schema
 ```sql
