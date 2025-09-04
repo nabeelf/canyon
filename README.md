@@ -35,7 +35,7 @@ Canyon is a modern, AI-powered enterprise quote management application built wit
 - **API Routes**: Next.js API routes for backend logic
 - **Database**: Supabase (PostgreSQL) with Row Level Security
 - **Storage**: Supabase Storage for PDF documents
-- **Authentication**: Google OIDC (OpenID Connect) with JWT verification
+- **Authentication**: Google SSO (OpenID Connect) with JWT verification
 - **AI Integration**: OpenAI GPT-5 API for quote generation
 
 ## 🔐 Authentication & Security
